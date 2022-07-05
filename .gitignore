@@ -3,8 +3,8 @@ CMakeFiles/
 CMakeScripts/
 Debug/
 
-src/TutorialApp.build/
-src/TutorialApp.xcodeproj/
+TutorialApp.build/
+TutorialApp.xcodeproj/
 
 **/.clang-format
 
