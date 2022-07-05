@@ -3,5 +3,8 @@ CMakeFiles/
 CMakeScripts/
 Debug/
 
+src/TutorialApp.build/
+src/TutorialApp.xcodeproj/
+
 *.xctestrun
 *.txt
