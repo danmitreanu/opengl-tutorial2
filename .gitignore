@@ -6,5 +6,7 @@ Debug/
 src/TutorialApp.build/
 src/TutorialApp.xcodeproj/
 
+**/.clang-format
+
 *.xctestrun
 *.txt
