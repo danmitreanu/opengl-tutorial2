@@ -1,12 +1,12 @@
 build/
 CMakeFiles/
 CMakeScripts/
-Debug/
 
 TutorialApp.build/
 TutorialApp.xcodeproj/
 
 **/.clang-format
+**/.cmake
 
 *.xctestrun
 *.txt
