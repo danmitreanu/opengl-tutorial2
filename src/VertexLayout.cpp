@@ -58,7 +58,7 @@ void VertexBuffer::create(const float* data, const VertexLayout& vertex_layout, 
     // Create buffers for vertices attributes
 
     int index = 0;
-    for (auto &attrib : vertex_layout.get_attributes())
+    for (auto& attrib : vertex_layout.get_attributes())
     {
         glEnableVertexAttribArray(index);
         glVertexAttribPointer(index, attrib.number_of_floats, GL_FLOAT, GL_FALSE, 0, (void*)offset);
