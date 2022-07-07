@@ -2,15 +2,10 @@
 #include <sstream>
 #include <fstream>
 
+#include "Math3D.h"
 #include "Shaders.h"
 
-ShaderFile::ShaderFile(const char* name, GLenum type)
-{
-    this->name = name;
-    this->type = type;
-}
-
-void Shaders::compile_shaders()
+void Shaders::init_program()
 {
     m_ShaderProgram = glCreateProgram();
 
@@ -19,21 +14,26 @@ void Shaders::compile_shaders()
         std::cout << "Could not create shader program." << std::endl;
         return;
     }
+    //return;
+    std::string vertex_text;
+    std::string frag_text;
 
-    for (auto& shader_file : m_Files)
+    if (!read_file(m_VertexFile, vertex_text) || !read_file(m_FragmentFile, frag_text))
     {
-        std::string shader_text;
-        if (!this->read_file(shader_file.name, shader_text))
-        {
-            std::cout << "Could not read shader file." << std::endl;
-            continue;
-        }
-
-        this->add_shader(shader_text.c_str(), shader_file.type);
+        std::cout << "Could not read one or more shader files." << std::endl;
+        return;
     }
+
+    m_VertexObject = create_shader_object(vertex_text, GL_VERTEX_SHADER);
+    m_FragmentObject = create_shader_object(frag_text, GL_FRAGMENT_SHADER);
+
+    glAttachShader(m_ShaderProgram, m_VertexObject);
+    glAttachShader(m_ShaderProgram, m_FragmentObject);
+
+    link_shader_program(m_ShaderProgram);
 }
 
-void Shaders::add_shader(const char* text, GLenum shader_type)
+GLuint Shaders::create_shader_object(const std::string& text, GLenum shader_type)
 {
     GLuint shader_object = glCreateShader(shader_type);
 
@@ -43,11 +43,12 @@ void Shaders::add_shader(const char* text, GLenum shader_type)
         return;
     }
 
+    
     const GLchar* shader_texts[1];
-    shader_texts[0] = text;
+    shader_texts[0] = text.c_str();
 
     GLint shader_lengths[1];
-    shader_lengths[0] = (GLint)strlen(text);
+    shader_lengths[0] = (GLint)text.size();
 
     glShaderSource(shader_object, 1, shader_texts, shader_lengths);
     glCompileShader(shader_object);
@@ -62,44 +63,36 @@ void Shaders::add_shader(const char* text, GLenum shader_type)
         std::cout << "Could not compile shader object." << std::endl;
     }
 
-    m_ShaderObjects.push_back(shader_object);
+    return shader_object;
 }
 
-void Shaders::attach_shaders()
-{
-    for (auto& obj : m_ShaderObjects)
-        glAttachShader(m_ShaderProgram, obj);
-}
-
-void Shaders::link_program()
+void Shaders::link_shader_program(GLuint program)
 {
     GLint success;
     GLchar error_log[1024];
 
-    glLinkProgram(m_ShaderProgram);
-    glGetProgramiv(m_ShaderProgram, GL_LINK_STATUS, &success);
+    glLinkProgram(program);
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
     if (success == 0)
     {
-        glGetProgramInfoLog(m_ShaderProgram, sizeof(error_log), NULL, error_log);
+        glGetProgramInfoLog(program, sizeof(error_log), NULL, error_log);
         std::cout << "Could not link shader program." << std::endl;
         std::cout << error_log << std::endl;
         return;
     }
 
-    glValidateProgram(m_ShaderProgram);
-    glGetProgramiv(m_ShaderProgram, GL_VALIDATE_STATUS, &success);
+    glValidateProgram(program);
+    glGetProgramiv(program, GL_VALIDATE_STATUS, &success);
     if (success == 0)
     {
-        glGetProgramInfoLog(m_ShaderProgram, sizeof(error_log), NULL, error_log);
+        glGetProgramInfoLog(program, sizeof(error_log), NULL, error_log);
         std::cout << "Could not validate program." << std::endl;
         std::cout << error_log << std::endl;
         return;
     }
-
-   
 }
 
-bool Shaders::read_file(const char* filename, std::string& out)
+bool Shaders::read_file(const std::string& filename, std::string& out)
 {
     std::ifstream read(filename);
     if (!read)
@@ -116,11 +109,12 @@ bool Shaders::read_file(const char* filename, std::string& out)
     return true;
 }
 
-void Shaders::create_shaders()
+void Shaders::create(const char* vertex_shader_file, const char* frag_shader_file)
 {
-    this->compile_shaders();
-    this->attach_shaders();
-    this->link_program();
+    m_VertexFile = vertex_shader_file;
+    m_FragmentFile = frag_shader_file;
+
+    init_program();
 }
 
 void Shaders::bind()
@@ -128,7 +122,24 @@ void Shaders::bind()
     glUseProgram(m_ShaderProgram);
 }
 
-void Shaders::add_file(ShaderFile file)
+void Shaders::ensure_bound()
 {
-    m_Files.push_back(file);
+/*  GLuint  */
+    GLint bound_program;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &bound_program);
+
+    if ((GLuint)bound_program != m_ShaderProgram)
+        this->bind();
+}
+
+void Shaders::set_uniform(Uniform uniform, float value)
+{
+    this->ensure_bound();
+    glUniform1f((GLint)uniform, value);
+}
+
+void Shaders::set_uniform(Uniform uniform, Vector2f vec2f)
+{
+    this->ensure_bound();
+    glUniform2f((GLint)uniform, vec2f.x, vec2f.y);
 }

@@ -1,37 +1,39 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <array>
 #include <OpenGL/gl3.h>
 
-struct ShaderFile
-{
-    ShaderFile() = default;
-    ShaderFile(const char*, GLenum);
-
-    const char* name = nullptr;
-    GLenum type = GL_VERTEX_SHADER;
-};
+#include "Math3D.h"
+#include "Uniform.h"
 
 class Shaders
 {
 private:
-    std::vector<ShaderFile> m_Files;
     GLuint m_ShaderProgram;
-    std::vector<GLuint> m_ShaderObjects;
 
-    void add_shader(const char*, GLenum);
-    void compile_shaders();
-    void attach_shaders();
-    void link_program();
-    
-    static bool read_file(const char*, std::string&);
+    std::string m_VertexFile;
+    std::string m_FragmentFile;
+    GLuint m_VertexObject;
+    GLuint m_FragmentObject;
+
+    void init_program();
+
+    // Makes sure the shader program is bound
+    void ensure_bound();
+
+    static bool read_file(const std::string&, std::string&);
+    static GLuint create_shader_object(const std::string&, GLenum);
+    static void link_shader_program(GLuint program);
 
 public:
     Shaders() = default;
 
-    void add_file(ShaderFile);
-    void create_shaders();
-    
+    // Create with vertex shader and frag shader files
+    void create(const char*, const char*);
+ 
     void bind();
+
+    void set_uniform(Uniform, float);
+    void set_uniform(Uniform, Vector2f);
 };

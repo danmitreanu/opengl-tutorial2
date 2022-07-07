@@ -25,8 +25,13 @@ void VertexBuffer::bind()
     glBindVertexArray(m_Vao);
 }
 
+void VertexBuffer::unbind()
+{
+    glBindVertexArray(0);
+}
+
 void VertexBuffer::create(
-    const float* data,
+    const void* data,
     const VertexLayout* vertex_layout,
     const std::size_t vertex_count)
 {

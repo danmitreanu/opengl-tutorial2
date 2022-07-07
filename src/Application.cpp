@@ -8,16 +8,7 @@
 #include "Shaders.h"
 #include "AttributeHelper.h"
 
-void Application::configure_shaders()
-{
-    ShaderFile vertex_shader("/Users/danm3/opengl/cmake/shaders/shader.vs", GL_VERTEX_SHADER);
-    ShaderFile frag_shader("/Users/danm3/opengl/cmake/shaders/shader.fs", GL_FRAGMENT_SHADER);
-
-    m_Shaders.add_file(vertex_shader);
-    m_Shaders.add_file(frag_shader);
-}
-
-bool Application::initialize(const char* window_name, std::size_t width, std::size_t height)
+bool Application::init_glfw(const char* window_name, std::size_t width, std::size_t height)
 {
     if (!glfwInit())
         return false;
@@ -39,13 +30,35 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
     glfwSetKeyCallback(m_Window, Application::key_callback);
     glfwSetWindowUserPointer(m_Window, this);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    return true;
+}
 
+void Application::init_buffer(const void* data, std::size_t size)
+{
     m_VertexLayout = std::make_shared<VertexLayout>();
     m_VertexBuffer = std::make_shared<VertexBuffer>();
 
     m_VertexLayout->AddVertexAttribute(AttributeType::Position, 2);
     m_VertexLayout->AddVertexAttribute(AttributeType::Color, 3);
+
+    m_VertexBuffer->create(data, m_VertexLayout.get(), size / m_VertexLayout->size());
+    m_VertexBuffer->bind();
+}
+
+void Application::init_shader()
+{
+    m_Shaders = std::make_shared<Shaders>();
+    const char* vertex_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.vs";
+    const char* frag_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.fs";
+
+    m_Shaders->create(vertex_shader_file, frag_shader_file);
+    m_Shaders->bind();
+}
+
+bool Application::initialize(const char* window_name, std::size_t width, std::size_t height)
+{
+    if (!init_glfw(window_name, width, height))
+        return false;
 
     float data[] = {
         0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
@@ -53,12 +66,8 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
         0.0f, 1.0f, 0.0f, 0.0f, 1.0f
     };
 
-    m_VertexBuffer->create(data, m_VertexLayout.get(), sizeof(data) / m_VertexLayout->size());
-
-    m_VertexBuffer->bind();
-
-    this->configure_shaders();
-    m_Shaders.create_shaders();
+    init_buffer((void*)data, sizeof(data));
+    init_shader();
 
     return true;
 }
@@ -87,16 +96,21 @@ void Application::update(const float delta_seconds)
 
 void Application::render()
 {
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    
+ 
     m_VertexBuffer->bind();
-    m_Shaders.bind();
+    m_Shaders->bind();
+
     glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    m_VertexBuffer->unbind();
 }
 
 void Application::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     Application* handler = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
+
     if (key == GLFW_KEY_ESCAPE)
         glfwSetWindowShouldClose(handler->m_Window, GLFW_TRUE);
 }

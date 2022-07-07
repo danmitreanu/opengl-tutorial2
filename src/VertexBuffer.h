@@ -16,5 +16,6 @@ public:
     ~VertexBuffer();
 
     void bind();
-    void create(const float*, const VertexLayout*, const std::size_t);
+    void unbind();
+    void create(const void*, const VertexLayout*, const std::size_t);
 };

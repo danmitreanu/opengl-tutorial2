@@ -19,17 +19,17 @@ public:
     void render();
     void run();
 
-    Shaders* get_shaders();
-
 private:
     GLFWwindow* m_Window = nullptr;
 
     std::shared_ptr<VertexLayout> m_VertexLayout;
     std::shared_ptr<VertexBuffer> m_VertexBuffer;
 
-    Shaders m_Shaders;
+    std::shared_ptr<Shaders> m_Shaders;
 
-    void configure_shaders();
+    bool init_glfw(const char*, std::size_t, std::size_t);
+    void init_buffer(const void*, std::size_t);
+    void init_shader();
 
     static void key_callback(GLFWwindow*, int, int, int, int);
 };
