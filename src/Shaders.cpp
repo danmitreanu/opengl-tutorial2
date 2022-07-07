@@ -29,11 +29,11 @@ void Shaders::compile_shaders()
             continue;
         }
 
-        this->add_shader(m_ShaderProgram, shader_text.c_str(), shader_file.type);
+        this->add_shader(shader_text.c_str(), shader_file.type);
     }
 }
 
-void Shaders::add_shader(GLuint program, const char* text, GLenum shader_type)
+void Shaders::add_shader(const char* text, GLenum shader_type)
 {
     GLuint shader_object = glCreateShader(shader_type);
 

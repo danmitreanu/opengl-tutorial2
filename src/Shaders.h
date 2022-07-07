@@ -20,7 +20,7 @@ private:
     GLuint m_ShaderProgram;
     std::vector<GLuint> m_ShaderObjects;
 
-    void add_shader(GLuint, const char*, GLenum);
+    void add_shader(const char*, GLenum);
     void compile_shaders();
     void attach_shaders();
     void link_program();
