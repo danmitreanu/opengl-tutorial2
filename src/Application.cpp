@@ -8,17 +8,10 @@
 #include "Shaders.h"
 #include "AttributeHelper.h"
 
-int ReadFile(const char*, std::string&);
-
 void Application::configure_shaders()
 {
-    ShaderFile vertex_shader;
-    vertex_shader.name = "/Users/danm3/opengl/cmake/shaders/shader.vs";
-    vertex_shader.type = GL_VERTEX_SHADER;
-
-    ShaderFile frag_shader;
-    frag_shader.name = "/Users/danm3/opengl/cmake/shaders/shader.fs";
-    frag_shader.type = GL_FRAGMENT_SHADER;
+    ShaderFile vertex_shader("/Users/danm3/opengl/cmake/shaders/shader.vs", GL_VERTEX_SHADER);
+    ShaderFile frag_shader("/Users/danm3/opengl/cmake/shaders/shader.fs", GL_FRAGMENT_SHADER);
 
     m_Shaders.add_file(vertex_shader);
     m_Shaders.add_file(frag_shader);

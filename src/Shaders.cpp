@@ -4,6 +4,12 @@
 
 #include "Shaders.h"
 
+ShaderFile::ShaderFile(const char* name, GLenum type)
+{
+    this->name = name;
+    this->type = type;
+}
+
 void Shaders::compile_shaders()
 {
     m_ShaderProgram = glCreateProgram();

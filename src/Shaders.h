@@ -6,6 +6,9 @@
 
 struct ShaderFile
 {
+    ShaderFile() = default;
+    ShaderFile(const char*, GLenum);
+
     const char* name = nullptr;
     GLenum type = GL_VERTEX_SHADER;
 };
