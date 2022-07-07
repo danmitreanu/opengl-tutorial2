@@ -6,9 +6,8 @@
 
 struct ShaderFile
 {
-    ShaderFile() : type(GL_VERTEX_SHADER) {}
-    const char* name;
-    GLenum type;
+    const char* name = nullptr;
+    GLenum type = GL_VERTEX_SHADER;
 };
 
 class Shaders
@@ -22,12 +21,14 @@ private:
     void compile_shaders();
     void attach_shaders();
     void link_program();
-
+    
     static bool read_file(const char*, std::string&);
 
 public:
     Shaders() = default;
 
     void add_file(ShaderFile);
-    void use_shaders();
+    void create_shaders();
+    
+    void bind();
 };

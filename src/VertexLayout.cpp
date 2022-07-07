@@ -3,11 +3,12 @@
 #include <vector>
 
 #include "VertexLayout.h"
+#include "VertexAttribute.h"
 
-void VertexLayout::AddVertexAttribute(const char* name, const std::size_t number_of_floats)
+void VertexLayout::AddVertexAttribute(AttributeType type, const std::size_t number_of_floats)
 {
     VertexAttribute attrib;
-    attrib.name = name;
+    attrib.type = type;
     attrib.number_of_floats = number_of_floats;
 
     m_Attributes.push_back(attrib);
@@ -22,7 +23,7 @@ std::size_t VertexLayout::size() const
     return total_attribs * sizeof(float);
 }
 
-const std::vector<VertexAttribute> VertexLayout::get_attributes() const
+const std::vector<VertexAttribute>& VertexLayout::get_attributes() const
 {
     return m_Attributes;
 }

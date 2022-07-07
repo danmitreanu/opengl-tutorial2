@@ -22,7 +22,7 @@ public:
     Shaders* get_shaders();
 
 private:
-    GLFWwindow* m_Window;
+    GLFWwindow* m_Window = nullptr;
 
     std::shared_ptr<VertexLayout> m_VertexLayout;
     std::shared_ptr<VertexBuffer> m_VertexBuffer;

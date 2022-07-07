@@ -90,7 +90,7 @@ void Shaders::link_program()
         return;
     }
 
-    glUseProgram(m_ShaderProgram);
+   
 }
 
 bool Shaders::read_file(const char* filename, std::string& out)
@@ -110,11 +110,16 @@ bool Shaders::read_file(const char* filename, std::string& out)
     return true;
 }
 
-void Shaders::use_shaders()
+void Shaders::create_shaders()
 {
     this->compile_shaders();
     this->attach_shaders();
     this->link_program();
+}
+
+void Shaders::bind()
+{
+    glUseProgram(m_ShaderProgram);
 }
 
 void Shaders::add_file(ShaderFile file)

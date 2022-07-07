@@ -6,17 +6,18 @@
 #include "Application.h"
 #include "VertexLayout.h"
 #include "Shaders.h"
+#include "AttributeHelper.h"
 
 int ReadFile(const char*, std::string&);
 
 void Application::configure_shaders()
 {
     ShaderFile vertex_shader;
-    vertex_shader.name = "shader.vs";
+    vertex_shader.name = "/Users/danm3/opengl/cmake/shaders/shader.vs";
     vertex_shader.type = GL_VERTEX_SHADER;
 
     ShaderFile frag_shader;
-    frag_shader.name = "shader.fs";
+    frag_shader.name = "/Users/danm3/opengl/cmake/shaders/shader.fs";
     frag_shader.type = GL_FRAGMENT_SHADER;
 
     m_Shaders.add_file(vertex_shader);
@@ -47,22 +48,24 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    VertexLayout* vlayout = new VertexLayout;
-    VertexBuffer* vbuffer = new VertexBuffer;
+    m_VertexLayout = std::make_shared<VertexLayout>();
+    m_VertexBuffer = std::make_shared<VertexBuffer>();
 
-    m_VertexLayout = std::shared_ptr<VertexLayout>(vlayout);
-    m_VertexBuffer = std::shared_ptr<VertexBuffer>(vbuffer);
+    m_VertexLayout->AddVertexAttribute(AttributeType::Position, 2);
+    m_VertexLayout->AddVertexAttribute(AttributeType::Color, 3);
 
-    vlayout->AddVertexAttribute("pos", 2);
+    float data[] = {
+        0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.8f, -0.2f, 0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+    };
 
-    float data[] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f };
+    m_VertexBuffer->create(data, m_VertexLayout.get(), sizeof(data) / m_VertexLayout->size());
 
-    vbuffer->create(data, *vlayout, sizeof(data) / vlayout->size());
-
-    vbuffer->bind();
+    m_VertexBuffer->bind();
 
     this->configure_shaders();
-    m_Shaders.use_shaders();
+    m_Shaders.create_shaders();
 
     return true;
 }
@@ -92,6 +95,9 @@ void Application::update(const float delta_seconds)
 void Application::render()
 {
     glClear(GL_COLOR_BUFFER_BIT);
+    
+    m_VertexBuffer->bind();
+    m_Shaders.bind();
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
