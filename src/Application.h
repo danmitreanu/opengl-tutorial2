@@ -8,6 +8,8 @@
 #include "VertexBuffer.h"
 #include "Shaders.h"
 
+#include "Movement.h"
+
 class Application
 {
 public:
@@ -27,9 +29,13 @@ private:
 
     std::shared_ptr<Shaders> m_Shaders;
 
+    Movement m_Movement;
+
     bool init_glfw(const char*, std::size_t, std::size_t);
     void init_buffer(const void*, std::size_t);
     void init_shader();
 
     static void key_callback(GLFWwindow*, int, int, int, int);
+    void key_down(int);
+    void key_up(int);
 };

@@ -112,5 +112,41 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
     Application* handler = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
 
     if (key == GLFW_KEY_ESCAPE)
+    {
         glfwSetWindowShouldClose(handler->m_Window, GLFW_TRUE);
+        return;
+    }
+
+    switch (action)
+    {
+        case GLFW_PRESS:
+            handler->key_down(key);
+            return;
+
+        case GLFW_RELEASE:
+            handler->key_up(key);
+            return;k
+    }
+}
+
+void Application::key_down(int key)
+{
+    switch (key)
+    {
+        case GLFW_KEY_W: m_Movement.up = true; break;
+        case GLFW_KEY_S: m_Movement.down = true; break;
+        case GLFW_KEY_A: m_Movement.left = true; break;
+        case GLFW_KEY_D: m_Movement.right = true; break;
+    }
+}
+
+void Application::key_up(int key)
+{
+    switch (key)
+    {
+        case GLFW_KEY_W: m_Movement.up = false; break;
+        case GLFW_KEY_S: m_Movement.down = false; break;
+        case GLFW_KEY_A: m_Movement.left = false; break;
+        case GLFW_KEY_D: m_Movement.right = false; break;
+    }
 }
