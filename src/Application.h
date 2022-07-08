@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include "OpenGL.h"
 #include <iostream>
 #include <memory>
 

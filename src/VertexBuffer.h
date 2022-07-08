@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <OpenGL/gl3.h>
+#include "OpenGL.h"
 
 class VertexLayout;
 

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <array>
-#include <OpenGL/gl3.h>
+#include "OpenGL.h"
 
 #include "Math3D.h"
 #include "Uniform.h"

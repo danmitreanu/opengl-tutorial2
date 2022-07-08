@@ -1,4 +1,4 @@
-#include <OpenGL/gl3.h>
+#include "OpenGL.h"
 #include <iostream>
 #include <vector>
 

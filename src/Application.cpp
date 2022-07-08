@@ -1,7 +1,8 @@
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+#include "OpenGL.h"
 
 #include "Application.h"
 #include "VertexLayout.h"
@@ -30,6 +31,14 @@ bool Application::init_glfw(const char* window_name, std::size_t width, std::siz
     glfwSetKeyCallback(m_Window, Application::key_callback);
     glfwSetWindowUserPointer(m_Window, this);
 
+#ifdef _WIN32
+    if (glewInit() != GLEW_OK)
+    {
+        std::cout << "GLEW could not be initialized." << std::endl;
+        return false;
+    }
+#endif
+
     return true;
 }
 
@@ -48,8 +57,13 @@ void Application::init_buffer(const void* data, std::size_t size)
 void Application::init_shader()
 {
     m_Shaders = std::make_shared<Shaders>();
+#ifndef _WIN32
     const char* vertex_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.vs";
     const char* frag_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.fs";
+#else
+    const char* vertex_shader_file = "X:\\opengl-tutorial2\\shaders\\shader.vs";
+    const char* frag_shader_file = "X:\\opengl-tutorial2\\shaders\\shader.fs";
+#endif
 
     m_Shaders->create(vertex_shader_file, frag_shader_file);
     m_Shaders->bind();
@@ -125,7 +139,7 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 
         case GLFW_RELEASE:
             handler->key_up(key);
-            return;k
+            return;
     }
 }
 

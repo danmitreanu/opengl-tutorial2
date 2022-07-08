@@ -40,9 +40,8 @@ GLuint Shaders::create_shader_object(const std::string& text, GLenum shader_type
     if (shader_object == 0)
     {
         std::cout << "Could not create shader object." << std::endl;
-        return;
+        return 0;
     }
-
     
     const GLchar* shader_texts[1];
     shader_texts[0] = text.c_str();

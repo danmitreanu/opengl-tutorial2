@@ -32,6 +32,8 @@
 #include <cfloat>
 #include <algorithm>
 
+#define M_PI 3.1415926
+
 #define ToRadian(x) (float)(((x) * M_PI / 180.0f))
 #define ToDegree(x) (float)(((x) * 180.0f / M_PI))
 
@@ -501,6 +503,15 @@ public:
 
     void Add(const Vector3f& v)
     {
+#ifdef _WIN32a
+        MinX = min(MinX, v.x);
+        MinY = min(MinY, v.y);
+        MinZ = min(MinZ, v.z);
+
+        MaxX = max(MaxX, v.x);
+        MaxY = max(MaxY, v.y);
+        MaxZ = max(MaxZ, v.z);
+#else
         MinX = std::min(MinX, v.x);
         MinY = std::min(MinY, v.y);
         MinZ = std::min(MinZ, v.z);
@@ -508,6 +519,7 @@ public:
         MaxX = std::max(MaxX, v.x);
         MaxY = std::max(MaxY, v.y);
         MaxZ = std::max(MaxZ, v.z);
+#endif
     }
 
     float MinX = FLT_MAX;

@@ -3,6 +3,7 @@ build/
 CMakeFiles/
 CMakeScripts/
 Debug/
+vs2022/
 
 TutorialApp.build/
 TutorialApp.xcodeproj/
