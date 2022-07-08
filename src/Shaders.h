@@ -34,6 +34,7 @@ public:
  
     void bind();
 
+    GLint get_uniform_pos(Uniform);
     void set_uniform(Uniform, float);
     void set_uniform(Uniform, Vector2f);
 };

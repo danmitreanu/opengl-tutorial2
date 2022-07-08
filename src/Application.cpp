@@ -83,6 +83,8 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
     init_buffer((void*)data, sizeof(data));
     init_shader();
 
+    UniformHelper::initialize();
+
     return true;
 }
 
@@ -106,6 +108,9 @@ void Application::run()
 void Application::update(const float delta_seconds)
 {
     //std::cout << delta_seconds << std::endl;
+    update_offset(delta_seconds);
+
+    m_Shaders->set_uniform(Uniform::Offset, m_Offset);
 }
 
 void Application::render()
@@ -163,4 +168,23 @@ void Application::key_up(int key)
         case GLFW_KEY_A: m_Movement.left = false; break;
         case GLFW_KEY_D: m_Movement.right = false; break;
     }
+}
+
+void Application::update_offset(float delta_seconds)
+{
+    const float speed = 0.4; // coords per sec
+
+    float diff = delta_seconds * speed;
+
+    if (m_Movement.left)
+        m_Offset.x -= diff;
+
+    if (m_Movement.right)
+        m_Offset.x += diff;
+
+    if (m_Movement.up)
+        m_Offset.y += diff;
+
+    if (m_Movement.down)
+        m_Offset.y -= diff;
 }

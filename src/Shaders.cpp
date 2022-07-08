@@ -131,14 +131,22 @@ void Shaders::ensure_bound()
         this->bind();
 }
 
+GLint Shaders::get_uniform_pos(Uniform uniform)
+{
+    const char* name = UniformHelper::get_name(uniform);
+    return glGetUniformLocation(m_ShaderProgram, name);
+}
+
 void Shaders::set_uniform(Uniform uniform, float value)
 {
     this->ensure_bound();
-    glUniform1f((GLint)uniform, value);
+    GLint pos = get_uniform_pos(uniform);
+    glUniform1f(pos, value);
 }
 
 void Shaders::set_uniform(Uniform uniform, Vector2f vec2f)
 {
     this->ensure_bound();
-    glUniform2f((GLint)uniform, vec2f.x, vec2f.y);
+    GLint pos = get_uniform_pos(uniform);
+    glUniform2f(pos, vec2f.x, vec2f.y);
 }

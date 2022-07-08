@@ -7,6 +7,7 @@
 #include "VertexLayout.h"
 #include "VertexBuffer.h"
 #include "Shaders.h"
+#include "Math3D.h"
 
 #include "Movement.h"
 
@@ -30,6 +31,7 @@ private:
     std::shared_ptr<Shaders> m_Shaders;
 
     Movement m_Movement;
+    Vector2f m_Offset{ 0, 0 };
 
     bool init_glfw(const char*, std::size_t, std::size_t);
     void init_buffer(const void*, std::size_t);
@@ -38,4 +40,5 @@ private:
     static void key_callback(GLFWwindow*, int, int, int, int);
     void key_down(int);
     void key_up(int);
+    void update_offset(float);
 };
