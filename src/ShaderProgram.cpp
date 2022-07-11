@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "Math3D.h"
+#include "AttributeHelper.h"
 #include "ShaderProgram.h"
 
 void ShaderProgram::init_program()
@@ -31,6 +32,21 @@ void ShaderProgram::init_program()
     glAttachShader(m_ShaderProgram, m_FragmentObject);
 
     link_shader_program(m_ShaderProgram);
+}
+
+void ShaderProgram::init_uniforms()
+{
+    auto count = (std::size_t)Uniform::Count;
+
+    for (std::size_t i = 0; i < count; i++)
+    {
+        const char* name = UniformHelper::get_name((Uniform)i);
+        int pos = glGetUniformLocation(m_ShaderProgram, name);
+        if (pos == -1)
+            continue;
+
+        m_Uniforms[i] = (GLuint)pos;
+    }
 }
 
 GLuint ShaderProgram::create_shader_object(const std::string& text, GLenum shader_type)
@@ -114,8 +130,7 @@ void ShaderProgram::create(const char* vertex_shader_file, const char* frag_shad
     m_FragmentFile = frag_shader_file;
 
     init_program();
-    
-    
+    init_uniforms();
 }
 
 void ShaderProgram::bind()
@@ -142,13 +157,11 @@ GLint ShaderProgram::get_uniform_pos(Uniform uniform)
 void ShaderProgram::set_uniform(Uniform uniform, float value)
 {
     this->ensure_bound();
-    GLint pos = get_uniform_pos(uniform);
-    glUniform1f(pos, value);
+    glUniform1f(m_Uniforms[(std::size_t)uniform], value);
 }
 
 void ShaderProgram::set_uniform(Uniform uniform, Vector2f vec2f)
 {
     this->ensure_bound();
-    GLint pos = get_uniform_pos(uniform);
-    glUniform2f(pos, vec2f.x, vec2f.y);
+    glUniform2f(m_Uniforms[(std::size_t)uniform], vec2f.x, vec2f.y);
 }

@@ -83,6 +83,8 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
     init_buffer((void*)data, sizeof(data));
     init_shader();
 
+    m_VertexBuffer->bind_attributes(m_Shaders->get_program_id());
+
     return true;
 }
 

@@ -13,7 +13,11 @@ void UniformData::initialize()
 UniformData& UniformHelper::get_uniforms()
 {
 	static UniformData data;
-	data.initialize();
+	if (!data.initialized)
+	{
+		data.initialize();
+		data.initialized = true;
+	}
  
 	return data;
 }

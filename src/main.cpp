@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "VertexLayout.h"
 
 int main()
 {

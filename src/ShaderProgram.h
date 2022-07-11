@@ -17,7 +17,10 @@ private:
     GLuint m_VertexObject;
     GLuint m_FragmentObject;
 
+    std::array<GLuint, (std::size_t)Uniform::Count> m_Uniforms;
+
     void init_program();
+    void init_uniforms();
 
     // Makes sure the shader program is bound
     void ensure_bound();
@@ -28,6 +31,8 @@ private:
 
 public:
     ShaderProgram() = default;
+
+    inline GLuint get_program_id() const { return m_ShaderProgram; }
 
     // Create with vertex shader and frag shader files
     void create(const char*, const char*);
