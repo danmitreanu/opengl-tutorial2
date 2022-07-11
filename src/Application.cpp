@@ -83,8 +83,6 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
     init_buffer((void*)data, sizeof(data));
     init_shader();
 
-    UniformHelper::initialize();
-
     return true;
 }
 

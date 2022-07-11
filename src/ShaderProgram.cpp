@@ -114,6 +114,8 @@ void ShaderProgram::create(const char* vertex_shader_file, const char* frag_shad
     m_FragmentFile = frag_shader_file;
 
     init_program();
+    
+    
 }
 
 void ShaderProgram::bind()

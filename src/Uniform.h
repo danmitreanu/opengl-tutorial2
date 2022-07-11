@@ -1,20 +1,25 @@
 #pragma once
 
-#include <map>
+#include <array>
 
 enum class Uniform
 {
-    Offset = 0
+    Offset = 0,
+
+    Count
+};
+
+struct UniformData
+{
+    std::array<std::pair<const char*, Uniform>, (std::size_t)Uniform::Count> uniforms;
+
+    void initialize();
 };
 
 struct UniformHelper
 {
-private:
-    static std::map<Uniform, const char*> m_TypeName;
-    static std::map<const char*, Uniform> m_NameType;
-
 public:
-    static void initialize();
+    static UniformData& get_uniforms();
+
     static const char* get_name(Uniform);
-    static Uniform get_type(const char*);
 };

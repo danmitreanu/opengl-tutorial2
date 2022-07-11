@@ -1,22 +1,28 @@
 #include "Uniform.h"
 
-#include <map>
+#include <array>
 
-std::map<Uniform, const char*> UniformHelper::m_TypeName;
-std::map<const char*, Uniform> UniformHelper::m_NameType;
-
-void UniformHelper::initialize()
+void UniformData::initialize()
 {
-	m_TypeName.insert({ Uniform::Offset, "Offset" });
-	m_NameType.insert({ "Offset", Uniform::Offset });
+	uniforms = std::array<std::pair<const char*, Uniform>, (std::size_t)Uniform::Count>
+	{
+		{{ "Offset", Uniform::Offset }}
+	};
+}
+
+UniformData& UniformHelper::get_uniforms()
+{
+	static UniformData data;
+	data.initialize();
+ 
+	return data;
 }
 
 const char* UniformHelper::get_name(Uniform uniform)
 {
-	return m_TypeName[uniform];
-}
-
-Uniform UniformHelper::get_type(const char* name)
-{
-	return m_NameType[name];
+	for (const auto& pair : get_uniforms().uniforms)
+	{
+		if (pair.second == uniform)
+			return pair.first;
+	}
 }
