@@ -9,7 +9,7 @@ uniform vec2 Offset;
 
 void main()
 {
-    gl_Position = vec4(Position.x + Offset.x, Position.y + Offset.y, 0.0, 1.0);
+    gl_Position = vec4(Position.xy + Offset.xy, 0.0, 1.0);
     //VertexColor = Color;
     VertexColor = Color;
 }
