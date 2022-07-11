@@ -47,7 +47,7 @@ void Application::init_buffer(const void* data, std::size_t size)
     m_VertexLayout = std::make_shared<VertexLayout>();
     m_VertexBuffer = std::make_shared<VertexBuffer>();
 
-    m_VertexLayout->AddVertexAttribute(AttributeType::Position, 2);
+    m_VertexLayout->AddVertexAttribute(AttributeType::Position, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::Color, 3);
 
     m_VertexBuffer->create(data, m_VertexLayout.get(), size / m_VertexLayout->size());
@@ -75,9 +75,9 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
         return false;
 
     float data[] = {
-        0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.8f, -0.2f, 0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+        0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.8f, -0.2f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f
     };
 
     init_buffer((void*)data, sizeof(data));

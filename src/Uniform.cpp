@@ -5,9 +5,13 @@
 void UniformData::initialize()
 {
 	uniforms = std::array<std::pair<const char*, Uniform>, (std::size_t)Uniform::Count>
-	{
-		{{ "Offset", Uniform::Offset }}
-	};
+	{{
+		{ "Offset", Uniform::Offset },
+		{ "Model", Uniform::Model },
+		{ "View", Uniform::View },
+		{ "Projection", Uniform::Projection },
+		{ "MVP", Uniform::MVP }
+	}};
 }
 
 UniformData& UniformHelper::get_uniforms()

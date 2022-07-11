@@ -5,6 +5,10 @@
 enum class Uniform
 {
     Offset = 0,
+    Model,
+    View,
+    Projection,
+    MVP,
 
     Count
 };
