@@ -3,9 +3,9 @@
 #include <fstream>
 
 #include "Math3D.h"
-#include "Shaders.h"
+#include "ShaderProgram.h"
 
-void Shaders::init_program()
+void ShaderProgram::init_program()
 {
     m_ShaderProgram = glCreateProgram();
 
@@ -33,7 +33,7 @@ void Shaders::init_program()
     link_shader_program(m_ShaderProgram);
 }
 
-GLuint Shaders::create_shader_object(const std::string& text, GLenum shader_type)
+GLuint ShaderProgram::create_shader_object(const std::string& text, GLenum shader_type)
 {
     GLuint shader_object = glCreateShader(shader_type);
 
@@ -65,7 +65,7 @@ GLuint Shaders::create_shader_object(const std::string& text, GLenum shader_type
     return shader_object;
 }
 
-void Shaders::link_shader_program(GLuint program)
+void ShaderProgram::link_shader_program(GLuint program)
 {
     GLint success;
     GLchar error_log[1024];
@@ -91,7 +91,7 @@ void Shaders::link_shader_program(GLuint program)
     }
 }
 
-bool Shaders::read_file(const std::string& filename, std::string& out)
+bool ShaderProgram::read_file(const std::string& filename, std::string& out)
 {
     std::ifstream read(filename);
     if (!read)
@@ -108,7 +108,7 @@ bool Shaders::read_file(const std::string& filename, std::string& out)
     return true;
 }
 
-void Shaders::create(const char* vertex_shader_file, const char* frag_shader_file)
+void ShaderProgram::create(const char* vertex_shader_file, const char* frag_shader_file)
 {
     m_VertexFile = vertex_shader_file;
     m_FragmentFile = frag_shader_file;
@@ -116,12 +116,12 @@ void Shaders::create(const char* vertex_shader_file, const char* frag_shader_fil
     init_program();
 }
 
-void Shaders::bind()
+void ShaderProgram::bind()
 {
     glUseProgram(m_ShaderProgram);
 }
 
-void Shaders::ensure_bound()
+void ShaderProgram::ensure_bound()
 {
 /*  GLuint  */
     GLint bound_program;
@@ -131,20 +131,20 @@ void Shaders::ensure_bound()
         this->bind();
 }
 
-GLint Shaders::get_uniform_pos(Uniform uniform)
+GLint ShaderProgram::get_uniform_pos(Uniform uniform)
 {
     const char* name = UniformHelper::get_name(uniform);
     return glGetUniformLocation(m_ShaderProgram, name);
 }
 
-void Shaders::set_uniform(Uniform uniform, float value)
+void ShaderProgram::set_uniform(Uniform uniform, float value)
 {
     this->ensure_bound();
     GLint pos = get_uniform_pos(uniform);
     glUniform1f(pos, value);
 }
 
-void Shaders::set_uniform(Uniform uniform, Vector2f vec2f)
+void ShaderProgram::set_uniform(Uniform uniform, Vector2f vec2f)
 {
     this->ensure_bound();
     GLint pos = get_uniform_pos(uniform);

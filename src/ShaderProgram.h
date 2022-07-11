@@ -7,7 +7,7 @@
 #include "Math3D.h"
 #include "Uniform.h"
 
-class Shaders
+class ShaderProgram
 {
 private:
     GLuint m_ShaderProgram;
@@ -27,7 +27,7 @@ private:
     static void link_shader_program(GLuint program);
 
 public:
-    Shaders() = default;
+    ShaderProgram() = default;
 
     // Create with vertex shader and frag shader files
     void create(const char*, const char*);

@@ -6,7 +6,7 @@
 
 #include "VertexLayout.h"
 #include "VertexBuffer.h"
-#include "Shaders.h"
+#include "ShaderProgram.h"
 #include "Math3D.h"
 
 #include "Movement.h"
@@ -28,7 +28,7 @@ private:
     std::shared_ptr<VertexLayout> m_VertexLayout;
     std::shared_ptr<VertexBuffer> m_VertexBuffer;
 
-    std::shared_ptr<Shaders> m_Shaders;
+    std::shared_ptr<ShaderProgram> m_Shaders;
 
     Movement m_Movement;
     Vector2f m_Offset{ 0, 0 };

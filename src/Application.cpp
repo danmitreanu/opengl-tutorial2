@@ -6,7 +6,7 @@
 
 #include "Application.h"
 #include "VertexLayout.h"
-#include "Shaders.h"
+#include "ShaderProgram.h"
 #include "AttributeHelper.h"
 
 bool Application::init_glfw(const char* window_name, std::size_t width, std::size_t height)
@@ -56,7 +56,7 @@ void Application::init_buffer(const void* data, std::size_t size)
 
 void Application::init_shader()
 {
-    m_Shaders = std::make_shared<Shaders>();
+    m_Shaders = std::make_shared<ShaderProgram>();
 #ifndef _WIN32
     const char* vertex_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.vs";
     const char* frag_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.fs";
