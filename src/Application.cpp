@@ -84,8 +84,8 @@ void Application::init_camera()
     m_Camera.change_framebuff_dimensions(m_Width, m_Height);
 
     Vector3f look_at{ 0.0, 0.0f, 0.0f };
-    Vector3f pos{ 1.0f, 1.0f, 1.0f };
-    m_Camera.set(pos, look_at);
+    
+    m_Camera.set(look_at);
 }
 
 bool Application::initialize(const char* window_name, std::size_t width, std::size_t height)
@@ -99,7 +99,69 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
         0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
     };
 
-    init_buffer((void*)data, sizeof(data));
+    float cube_data[] = {
+        // face 1
+        // triangle 1
+        -3, -3, -3, 1, 0, 0,
+        -3, 3, -3, 0, 1, 0,
+        3, 3, -3, 0, 0, 1,
+        // triangle 2
+        -3, -3, -3, 1, 0, 0,
+        3, -3, -3, 0, 1, 0,
+        3, 3, -3, 0, 0, 1,
+
+        // face 2
+        // triangle 3
+        -3, 3, 3, 1, 0, 0,
+        -3, 3, -3, 0, 1, 0,
+        3, 3, -3, 0, 0, 1,
+        // triangle 4
+        -3, 3, 3, 1, 0, 0,
+        3, 3, 3, 0, 1, 0,
+        3, 3, -3, 0, 0, 1,
+
+        // face 3
+        // triangle 5
+        -3, -3, 3, 1, 0, 0,
+        -3, 3, 3, 0, 1, 0,
+        3, 3, 3, 0, 0, 1,
+        // triangle 6
+        3, -3, 3, 1, 0, 0,
+        -3, -3, 3, 0, 1, 0,
+        3, 3, 3, 0, 0, 1,
+
+        // face 4
+        // triangle 7
+        3, 3, 3, 1, 0, 0,
+        3, 3, -3, 0, 1, 0,
+        3, -3, 3, 0, 0, 1,
+        // triangle 8
+        3, -3, 3, 1, 0, 0,
+        -3, -3, 3, 0, 1, 0,
+        3, -3, -3, 0, 0, 1,
+
+        // face 5
+        // triangle 9
+        -3, -3, 3, 1, 0, 0,
+        -3, -3, -3, 0, 1, 0,
+        3, -3, -3, 0, 0, 1,
+        // triangle 10
+        3, -3, 3, 1, 0, 0,
+        -3, -3, 3, 0, 1, 0,
+        3, -3, -3, 0, 0, 1,
+
+        // face 6
+        // triangle 11
+        -3, 3, 3, 1, 0, 0,
+        -3, 3, -3, 0, 1, 0,
+        -3, -3, -3, 0, 0, 1,
+        //triangle 12
+        -3, -3, 3, 1, 0, 0,
+        -3, 3, 3, 0, 1, 0,
+        -3, -3, -3, 0, 0, 1
+    };
+
+    init_buffer((void*)cube_data, sizeof(cube_data));
     init_shader();
     init_camera();
 
@@ -131,6 +193,8 @@ void Application::update(const float delta_seconds)
 
     m_ModelMatrix.InitIdentity();
     m_ModelMatrix.InitTranslationTransform(m_Offset.x, m_Offset.y, 0.0f);
+    
+    m_Camera.update_camera_matrices();
 }
 
 void Application::render()
@@ -143,7 +207,7 @@ void Application::render()
  
     m_Shaders->set_uniform(Uniform::MVP, m_Camera.get_mvp(m_ModelMatrix));
  
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     m_VertexBuffer->unbind();
 }
@@ -188,6 +252,16 @@ void Application::key_down(int key)
         case GLFW_KEY_S: m_Movement.down = true; break;
         case GLFW_KEY_A: m_Movement.left = true; break;
         case GLFW_KEY_D: m_Movement.right = true; break;
+        case GLFW_KEY_Q: m_Movement.yaw_left = true; break;
+        case GLFW_KEY_E: m_Movement.yaw_right = true; break;
+            
+            
+        case GLFW_KEY_Z: m_Movement.pitch_up = true; break;
+        case GLFW_KEY_X: m_Movement.pitch_down = true; break;
+            
+            
+        case GLFW_KEY_1: m_Movement.tab = true; break;
+        case GLFW_KEY_2: m_Movement.ctrl = true; break;
     }
 }
 
@@ -199,24 +273,39 @@ void Application::key_up(int key)
         case GLFW_KEY_S: m_Movement.down = false; break;
         case GLFW_KEY_A: m_Movement.left = false; break;
         case GLFW_KEY_D: m_Movement.right = false; break;
+            
+        case GLFW_KEY_Q: m_Movement.yaw_left = false; break;
+        case GLFW_KEY_E: m_Movement.yaw_right = false; break;
+            
+        case GLFW_KEY_Z: m_Movement.pitch_up = false; break;
+        case GLFW_KEY_X: m_Movement.pitch_down = false; break;
+            
+        case GLFW_KEY_1: m_Movement.tab = false; break;
+        case GLFW_KEY_2: m_Movement.ctrl = false; break;
     }
 }
 
 void Application::update_offset(float delta_seconds)
 {
-    const float speed = 0.4; // coords per sec
+    const float speed = 1.0f; // units per sec
+    const float camera_coeff = 125.0f;
 
     float diff = delta_seconds * speed;
 
-    if (m_Movement.left)
-        m_Offset.x -= diff;
-
-    if (m_Movement.right)
-        m_Offset.x += diff;
-
-    if (m_Movement.up)
-        m_Offset.y += diff;
-
-    if (m_Movement.down)
-        m_Offset.y -= diff;
+    if(m_Movement.yaw_left != m_Movement.yaw_right)
+    {
+        float yaw_dir = -1.0f * int(m_Movement.yaw_left) + 1.0f * int(m_Movement.yaw_right);
+        m_Camera.on_yaw(yaw_dir * diff * camera_coeff);
+    }
+    if(m_Movement.pitch_up != m_Movement.pitch_down)
+    {
+        float pitch_dir = -1.0f * int(m_Movement.pitch_up) + 1.0f * int(m_Movement.pitch_down);
+        m_Camera.on_pitch(pitch_dir * diff * camera_coeff);
+    }
+    
+    if(m_Movement.up != m_Movement.down)
+    {
+        float direction = 1.0f * int(m_Movement.up) - 1.0f * int(m_Movement.down);
+        m_Camera.on_move_forward(direction * diff * camera_coeff);
+    }
 }
