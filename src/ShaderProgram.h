@@ -41,5 +41,6 @@ public:
 
     GLint get_uniform_pos(Uniform);
     void set_uniform(Uniform, float);
-    void set_uniform(Uniform, Vector2f);
+    void set_uniform(Uniform, const Vector2f&);
+    void set_uniform(Uniform, const Matrix4f&);
 };

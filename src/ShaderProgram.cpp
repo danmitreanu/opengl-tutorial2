@@ -160,8 +160,13 @@ void ShaderProgram::set_uniform(Uniform uniform, float value)
     glUniform1f(m_Uniforms[(std::size_t)uniform], value);
 }
 
-void ShaderProgram::set_uniform(Uniform uniform, Vector2f vec2f)
+void ShaderProgram::set_uniform(Uniform uniform, const Vector2f& vec2f)
 {
     this->ensure_bound();
     glUniform2f(m_Uniforms[(std::size_t)uniform], vec2f.x, vec2f.y);
+}
+
+void ShaderProgram::set_uniform(Uniform uniform, const Matrix4f& matrix4)
+{
+    glUniformMatrix4fv(m_Uniforms[(std::size_t)uniform], 1, GL_TRUE, &matrix4.m[0][0]);
 }

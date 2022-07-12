@@ -14,6 +14,9 @@ bool Application::init_glfw(const char* window_name, std::size_t width, std::siz
     if (!glfwInit())
         return false;
 
+    m_Width = width;
+    m_Height = height;
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -29,6 +32,7 @@ bool Application::init_glfw(const char* window_name, std::size_t width, std::siz
 
     glfwMakeContextCurrent(m_Window);
     glfwSetKeyCallback(m_Window, Application::key_callback);
+    glfwSetFramebufferSizeCallback(m_Window, Application::framebuffer_size_callback);
     glfwSetWindowUserPointer(m_Window, this);
 
 #ifdef _WIN32
@@ -69,6 +73,23 @@ void Application::init_shader()
     m_Shaders->bind();
 }
 
+void Application::init_camera()
+{
+    int width, height;
+    glfwGetFramebufferSize(m_Window, &width, &height);
+    m_Width = width;
+    m_Height = height;
+
+    m_Camera.change_framebuff_dimensions(m_Width, m_Height);
+
+    Matrix4f model;
+    model.InitIdentity();
+
+    m_Shaders->set_uniform(Uniform::Model, model);
+    m_Shaders->set_uniform(Uniform::View, m_Camera.get_view_matrix());
+    m_Shaders->set_uniform(Uniform::Projection, m_Camera.get_projection_matrix());
+}
+
 bool Application::initialize(const char* window_name, std::size_t width, std::size_t height)
 {
     if (!init_glfw(window_name, width, height))
@@ -82,6 +103,7 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
 
     init_buffer((void*)data, sizeof(data));
     init_shader();
+    init_camera();
 
     m_VertexBuffer->bind_attributes(m_Shaders->get_program_id());
 
@@ -146,6 +168,14 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
             handler->key_up(key);
             return;
     }
+}
+
+void Application::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    Application* handler = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
+    handler->m_Width = width;
+    handler->m_Height = height;
+    handler->m_Camera.change_framebuff_dimensions(width, height);
 }
 
 void Application::key_down(int key)
