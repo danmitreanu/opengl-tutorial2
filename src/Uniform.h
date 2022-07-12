@@ -2,6 +2,8 @@
 
 #include <array>
 
+struct UniformData;
+
 enum class Uniform
 {
     Offset = 0,
@@ -11,14 +13,6 @@ enum class Uniform
     MVP,
 
     Count
-};
-
-struct UniformData
-{
-    std::array<std::pair<const char*, Uniform>, (std::size_t)Uniform::Count> uniforms;
-
-    bool initialized = false;
-    void initialize();
 };
 
 struct UniformHelper

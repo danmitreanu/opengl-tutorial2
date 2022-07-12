@@ -38,8 +38,9 @@ private:
 
     std::shared_ptr<ShaderProgram> m_Shaders;
 
+    Matrix4f m_ModelMatrix;
     Movement m_Movement;
-    Vector2f m_Offset{ 0, 0 };
+    Vector3f m_Offset{ 0, 0 , 0};
 
     bool init_glfw(const char*, std::size_t, std::size_t);
     void init_buffer(const void*, std::size_t);

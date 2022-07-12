@@ -210,7 +210,7 @@ void Matrix4f::InitCameraTransform(const Vector3f& Pos, const Vector3f& Target, 
     CameraTranslation.InitTranslationTransform(-Pos.x, -Pos.y, -Pos.z);
 
     Matrix4f CameraRotateTrans;
-    CameraRotateTrans.InitCameraTransform(Target, Up);
+    CameraRotateTrans.InitCameraTransform(Target - Pos, Up);
 
     *this = CameraRotateTrans * CameraTranslation;
 }

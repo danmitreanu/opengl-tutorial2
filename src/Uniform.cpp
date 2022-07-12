@@ -2,7 +2,14 @@
 
 #include <array>
 
-void UniformData::initialize()
+struct UniformData
+{
+	UniformData();
+
+    std::array<std::pair<const char*, Uniform>, (std::size_t)Uniform::Count> uniforms;
+};
+
+UniformData::UniformData()
 {
 	uniforms = std::array<std::pair<const char*, Uniform>, (std::size_t)Uniform::Count>
 	{{
@@ -17,12 +24,6 @@ void UniformData::initialize()
 UniformData& UniformHelper::get_uniforms()
 {
 	static UniformData data;
-	if (!data.initialized)
-	{
-		data.initialize();
-		data.initialized = true;
-	}
- 
 	return data;
 }
 

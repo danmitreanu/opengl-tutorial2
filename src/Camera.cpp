@@ -6,7 +6,7 @@ Camera::Camera()
 {
     m_ProjInfo.FOV = 90;
     m_ProjInfo.zNear = 1.0f;
-    m_ProjInfo.zFar = 10.0f;
+    m_ProjInfo.zFar = 1000.0f;
 }
 
 void Camera::change_framebuff_dimensions(std::size_t width, std::size_t height)
@@ -15,25 +15,12 @@ void Camera::change_framebuff_dimensions(std::size_t width, std::size_t height)
     m_ProjInfo.Height = height;
 }
 
-void Camera::set_position(const Vector3f& xyz)
+void Camera::set(const Vector3f& pos, const Vector3f& look_at)
 {
-    m_Position = xyz;
-    update_view();
-}
+    m_Position = pos;
+    m_LookAt = look_at;
 
-void Camera::set_look_at(const Vector3f& xyz)
-{
-    m_LookAt = xyz;
-    update_view();
-}
-
-void Camera::update_view()
-{
     m_View.InitCameraTransform(m_Position, m_LookAt, m_Up);
-}
-
-void Camera::update_projection()
-{
     m_Projection.InitPersProjTransform(m_ProjInfo);
 }
 
@@ -45,4 +32,16 @@ const Matrix4f& Camera::get_view_matrix()
 const Matrix4f& Camera::get_projection_matrix()
 {
     return m_Projection;
+}
+
+Matrix4f Camera::get_mvp(const Matrix4f& model)
+{
+    return m_Projection * m_View * model;
+}
+
+Matrix4f Camera::get_mvp()
+{
+    Matrix4f model;
+    model.InitIdentity();
+    return get_mvp(model);
 }

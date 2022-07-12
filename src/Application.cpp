@@ -35,6 +35,12 @@ bool Application::init_glfw(const char* window_name, std::size_t width, std::siz
     glfwSetFramebufferSizeCallback(m_Window, Application::framebuffer_size_callback);
     glfwSetWindowUserPointer(m_Window, this);
 
+    int fb_width, fb_height;
+    glfwGetFramebufferSize(m_Window, &fb_width, &fb_height);
+    glViewport(0, 0, fb_width, fb_height);
+    m_Width = fb_width;
+    m_Height = fb_height;
+
 #ifdef _WIN32
     if (glewInit() != GLEW_OK)
     {
@@ -75,30 +81,22 @@ void Application::init_shader()
 
 void Application::init_camera()
 {
-    int width, height;
-    glfwGetFramebufferSize(m_Window, &width, &height);
-    m_Width = width;
-    m_Height = height;
-
     m_Camera.change_framebuff_dimensions(m_Width, m_Height);
 
-    Matrix4f model;
-    model.InitIdentity();
-
-    m_Shaders->set_uniform(Uniform::Model, model);
-    m_Shaders->set_uniform(Uniform::View, m_Camera.get_view_matrix());
-    m_Shaders->set_uniform(Uniform::Projection, m_Camera.get_projection_matrix());
+    Vector3f look_at{ 0.0, 0.0f, 0.0f };
+    Vector3f pos{ 1.0f, 1.0f, 1.0f };
+    m_Camera.set(pos, look_at);
 }
 
 bool Application::initialize(const char* window_name, std::size_t width, std::size_t height)
 {
     if (!init_glfw(window_name, width, height))
         return false;
-
+ 
     float data[] = {
-        0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.8f, -0.2f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f
+        1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
     };
 
     init_buffer((void*)data, sizeof(data));
@@ -129,10 +127,10 @@ void Application::run()
 
 void Application::update(const float delta_seconds)
 {
-    //std::cout << delta_seconds << std::endl;
     update_offset(delta_seconds);
 
-    m_Shaders->set_uniform(Uniform::Offset, m_Offset);
+    m_ModelMatrix.InitIdentity();
+    m_ModelMatrix.InitTranslationTransform(m_Offset.x, m_Offset.y, 0.0f);
 }
 
 void Application::render()
@@ -142,7 +140,9 @@ void Application::render()
  
     m_VertexBuffer->bind();
     m_Shaders->bind();
-
+ 
+    m_Shaders->set_uniform(Uniform::MVP, m_Camera.get_mvp(m_ModelMatrix));
+ 
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     m_VertexBuffer->unbind();
@@ -176,6 +176,8 @@ void Application::framebuffer_size_callback(GLFWwindow* window, int width, int h
     handler->m_Width = width;
     handler->m_Height = height;
     handler->m_Camera.change_framebuff_dimensions(width, height);
+
+    glViewport(0, 0, width, height);
 }
 
 void Application::key_down(int key)
