@@ -1,4 +1,4 @@
-#include "Uniform.h"
+#include "UniformHelper.h"
 
 #include <array>
 
@@ -21,7 +21,7 @@ UniformData::UniformData()
 	}};
 }
 
-UniformData& UniformHelper::get_uniforms()
+UniformData& get_uniforms()
 {
 	static UniformData data;
 	return data;

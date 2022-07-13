@@ -5,7 +5,7 @@
 #include "OpenGL.h"
 
 #include "Math3D.h"
-#include "Uniform.h"
+#include "UniformHelper.h"
 
 class ShaderProgram
 {

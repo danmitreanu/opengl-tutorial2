@@ -2,7 +2,14 @@
 
 #include <array>
 
-void AttributeData::initialize()
+struct AttributeData
+{
+    AttributeData();
+
+    std::array<std::pair<const char*, AttributeType>, (std::size_t)AttributeType::Count> attributes;
+};
+
+AttributeData::AttributeData()
 {
     attributes = std::array<std::pair<const char*, AttributeType>, (std::size_t)AttributeType::Count>
     {{
@@ -11,14 +18,9 @@ void AttributeData::initialize()
     }};
 }
 
-AttributeData& AttributeHelper::get_attributes()
+AttributeData& get_attributes()
 {
     static AttributeData data;
-    if (!data.initialized)
-    {
-        data.initialize();
-        data.initialized = true;
-    }
 
     return data;
 }

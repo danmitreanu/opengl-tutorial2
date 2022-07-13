@@ -18,7 +18,5 @@ enum class Uniform
 struct UniformHelper
 {
 public:
-    static UniformData& get_uniforms();
-
     static const char* get_name(Uniform);
 };
