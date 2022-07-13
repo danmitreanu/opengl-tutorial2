@@ -64,6 +64,13 @@ void Application::init_buffer(const void* data, std::size_t size)
     m_VertexBuffer->bind();
 }
 
+void Application::init_index_buffer(const void* data, std::size_t size)
+{
+    m_IndexBuffer = std::make_shared<IndexBuffer>();
+
+    m_IndexBuffer->create(data, size);
+}
+
 void Application::init_shader()
 {
     m_Shaders = std::make_shared<ShaderProgram>();
@@ -254,14 +261,8 @@ void Application::key_down(int key)
         case GLFW_KEY_D: m_Movement.right = true; break;
         case GLFW_KEY_Q: m_Movement.yaw_left = true; break;
         case GLFW_KEY_E: m_Movement.yaw_right = true; break;
-            
-            
         case GLFW_KEY_Z: m_Movement.pitch_up = true; break;
         case GLFW_KEY_X: m_Movement.pitch_down = true; break;
-            
-            
-        case GLFW_KEY_1: m_Movement.tab = true; break;
-        case GLFW_KEY_2: m_Movement.ctrl = true; break;
     }
 }
 
@@ -273,39 +274,41 @@ void Application::key_up(int key)
         case GLFW_KEY_S: m_Movement.down = false; break;
         case GLFW_KEY_A: m_Movement.left = false; break;
         case GLFW_KEY_D: m_Movement.right = false; break;
-            
         case GLFW_KEY_Q: m_Movement.yaw_left = false; break;
         case GLFW_KEY_E: m_Movement.yaw_right = false; break;
-            
         case GLFW_KEY_Z: m_Movement.pitch_up = false; break;
         case GLFW_KEY_X: m_Movement.pitch_down = false; break;
-            
-        case GLFW_KEY_1: m_Movement.tab = false; break;
-        case GLFW_KEY_2: m_Movement.ctrl = false; break;
     }
 }
 
 void Application::update_offset(float delta_seconds)
 {
     const float speed = 1.0f; // units per sec
-    const float camera_coeff = 125.0f;
+    const float camera_coeff = 100.0f;
 
     float diff = delta_seconds * speed;
 
-    if(m_Movement.yaw_left != m_Movement.yaw_right)
+    if (m_Movement.yaw_left != m_Movement.yaw_right)
     {
         float yaw_dir = -1.0f * int(m_Movement.yaw_left) + 1.0f * int(m_Movement.yaw_right);
         m_Camera.on_yaw(yaw_dir * diff * camera_coeff);
     }
-    if(m_Movement.pitch_up != m_Movement.pitch_down)
+
+    if (m_Movement.pitch_up != m_Movement.pitch_down)
     {
         float pitch_dir = -1.0f * int(m_Movement.pitch_up) + 1.0f * int(m_Movement.pitch_down);
         m_Camera.on_pitch(pitch_dir * diff * camera_coeff);
     }
-    
-    if(m_Movement.up != m_Movement.down)
+ 
+    if (m_Movement.up != m_Movement.down)
     {
-        float direction = 1.0f * int(m_Movement.up) - 1.0f * int(m_Movement.down);
+        float direction = -1.0f * int(m_Movement.up) + 1.0f * int(m_Movement.down);
         m_Camera.on_move_forward(direction * diff * camera_coeff);
+    }
+
+    if (m_Movement.left != m_Movement.right)
+    {
+        float direction = 1.0f * int(m_Movement.left) - 1.0f * int(m_Movement.right);
+        m_Camera.on_move_side(direction * diff * camera_coeff);
     }
 }

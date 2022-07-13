@@ -67,21 +67,28 @@ void Camera::on_down_key(float up)
 
 void Camera::on_move_forward(float distance)
 {
-    Vector3f dir = Vector3f(1.0f,0.0f, 0.0f);
-    
-    dir.Rotate(m_Yaw, Vector3f(0.0f,0.0f, 1.0f));
-    
+    Vector3f dir{ 1.0f, 0.0f, 0.0f };
+ 
+    dir.Rotate(m_Yaw, m_Z);
+ 
+    m_LookAt = m_LookAt + dir * distance;
+}
+
+void Camera::on_move_side(float distance)
+{
+    Vector3f dir{ 0.0f, 1.0f, 0.0f };
+
+    dir.Rotate(m_Yaw, m_Z);
+
     m_LookAt = m_LookAt + dir * distance;
 }
 
 void Camera::update_camera_matrices()
 {
-    Vector3f dir = Vector3f(1.0f,0.0f, 0.0f);
+    Vector3f dir{ 1.0f, 0.0f, 0.0f };
    
-    dir.Rotate(m_Pitch, Vector3f(0.0f,1.0f, 0.0f));
-    dir.Rotate(m_Yaw, Vector3f(0.0f,0.0f, 1.0f));
-    //m_Position.x = m_LookAt.x + m_Distance * sin(m_Rotation);
-    //m_Position.y = m_LookAt.y + m_Distance * cos(m_Rotation);
+    dir.Rotate(m_Pitch, m_Y);
+    dir.Rotate(m_Yaw, m_Z);
 
     m_View.InitCameraTransform(m_LookAt + dir * m_Distance, m_LookAt, m_Up);
 }

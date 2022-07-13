@@ -5,25 +5,26 @@
 struct Camera
 {
 private:
-    //Vector3f m_Position;
     Vector3f m_LookAt;
-    
+ 
     float m_Pitch = 0.0f;
     float m_Distance = 20.0f;
     float m_Yaw  = 0.0f;
-    
 
     Matrix4f m_View;
     Matrix4f m_Projection;
     PersProjInfo m_ProjInfo;
 
     Vector3f m_Up{ 0.0f, 0.0f, 1.0f }; // Z is up
-
+ 
+    Vector3f m_X { 1.0f, 0.0f, 0.0f };
+    Vector3f m_Y { 0.0f, 1.0f, 0.0f };
+    Vector3f m_Z { 0.0f, 0.0f, 1.0f };
     
+ 
 public:
     Camera();
-
-    
+ 
     void update_camera_matrices();
 
     void change_framebuff_dimensions(std::size_t, std::size_t);
@@ -38,8 +39,8 @@ public:
     void on_yaw(float);
     void on_pitch(float rad);
     void on_move_forward(float distance);
-    
-    
+    void on_move_side(float distance);
+ 
     //void move(float);
     void on_up_key(float);
     void on_down_key(float);

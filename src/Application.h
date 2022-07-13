@@ -6,6 +6,7 @@
 
 #include "VertexLayout.h"
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
 #include "ShaderProgram.h"
 #include "Camera.h"
 #include "Math3D.h"
@@ -35,6 +36,7 @@ private:
 
     std::shared_ptr<VertexLayout> m_VertexLayout;
     std::shared_ptr<VertexBuffer> m_VertexBuffer;
+    std::shared_ptr<IndexBuffer> m_IndexBuffer;
 
     std::shared_ptr<ShaderProgram> m_Shaders;
 
@@ -44,6 +46,7 @@ private:
 
     bool init_glfw(const char*, std::size_t, std::size_t);
     void init_buffer(const void*, std::size_t);
+    void init_index_buffer(const void*, std::size_t);
     void init_shader();
     void init_camera();
 
