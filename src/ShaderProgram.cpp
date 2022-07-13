@@ -31,6 +31,8 @@ void ShaderProgram::init_program()
     glAttachShader(m_ShaderProgram, m_VertexObject);
     glAttachShader(m_ShaderProgram, m_FragmentObject);
 
+    
+    init_attributes();
     link_shader_program(m_ShaderProgram);
 }
 
@@ -43,7 +45,10 @@ void ShaderProgram::init_uniforms()
         const char* name = UniformHelper::get_name((Uniform)i);
         int pos = glGetUniformLocation(m_ShaderProgram, name);
         if (pos == -1)
+        {
+            m_Uniforms[i] = -1;
             continue;
+        }
 
         m_Uniforms[i] = (GLuint)pos;
     }
@@ -96,7 +101,7 @@ void ShaderProgram::link_shader_program(GLuint program)
         return;
     }
 
-    glValidateProgram(program);
+    /*glValidateProgram(program);
     glGetProgramiv(program, GL_VALIDATE_STATUS, &success);
     if (success == 0)
     {
@@ -104,7 +109,7 @@ void ShaderProgram::link_shader_program(GLuint program)
         std::cout << "Could not validate program." << std::endl;
         std::cout << error_log << std::endl;
         return;
-    }
+    }*/
 }
 
 bool ShaderProgram::read_file(const std::string& filename, std::string& out)
@@ -131,6 +136,7 @@ void ShaderProgram::create(const char* vertex_shader_file, const char* frag_shad
 
     init_program();
     init_uniforms();
+    //init_attributes();
 }
 
 void ShaderProgram::bind()
@@ -169,4 +175,33 @@ void ShaderProgram::set_uniform(Uniform uniform, const Vector2f& vec2f)
 void ShaderProgram::set_uniform(Uniform uniform, const Matrix4f& matrix4)
 {
     glUniformMatrix4fv(m_Uniforms[(std::size_t)uniform], 1, GL_TRUE, &matrix4.m[0][0]);
+}
+
+std::size_t ShaderProgram::get_attribute_count()
+{
+    GLint count;
+    glGetProgramiv(m_ShaderProgram, GL_ACTIVE_ATTRIBUTES, &count);
+    return (std::size_t)count;
+}
+
+void ShaderProgram::init_attributes()
+{
+    const std::size_t namebuf_size = 16;
+    GLchar namebuf[namebuf_size];
+    GLint size;
+    GLenum type;
+    GLsizei length;
+
+    //const std::size_t count = get_attribute_count();
+
+    for (std::size_t i = 0; i < (std::size_t)AttributeType::Count; i++)
+    {
+       //glGetActiveAttrib(m_ShaderProgram, i, namebuf_size, &length, &size, &type, namebuf);
+
+        //std::size_t type_index = (std::size_t)AttributeHelper::get_type(namebuf);
+
+        //assert(type_index != (std::size_t)AttributeType::Count);
+
+        glBindAttribLocation(m_ShaderProgram, int(i), AttributeHelper::get_name((AttributeType)i));
+    }
 }

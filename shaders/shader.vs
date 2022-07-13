@@ -1,13 +1,11 @@
 #version 330 core
 
-layout (location = 0) in vec3 Position;
-layout (location = 1) in vec3 Color;
+in vec3 Position;
+in vec3 Color;
+in vec2 UV;
 
 out vec3 VertexColor;
 
-uniform vec2 Offset;
-uniform mat4 Model;
-uniform mat4 View;
 uniform mat4 Projection;
 uniform mat4 MVP;
 

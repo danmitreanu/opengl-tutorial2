@@ -10,9 +10,9 @@ private:
     GLuint m_Vao;
 
 public:
-    IndexBuffer(const VertexBuffer*);
+    IndexBuffer();
     ~IndexBuffer();
 
     void bind();
-    void create(const void*, const std::size_t);
+    void create(const VertexBuffer*, const void*, const std::size_t);
 };

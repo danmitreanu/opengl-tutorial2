@@ -21,8 +21,7 @@ public:
     VertexBuffer();
     ~VertexBuffer();
 
-    void bind();
-    void unbind();
+    void bind() const;
+    void unbind() const;
     void create(const void*, const VertexLayout*, const std::size_t);
-    void bind_attributes(GLuint shader_program);
 };

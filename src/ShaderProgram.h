@@ -21,6 +21,9 @@ private:
 
     void init_program();
     void init_uniforms();
+    void init_attributes();
+
+    std::size_t get_attribute_count();
 
     // Makes sure the shader program is bound
     void ensure_bound();

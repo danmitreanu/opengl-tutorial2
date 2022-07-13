@@ -6,6 +6,7 @@ enum class AttributeType
 {
     Position = 0,
     Color,
+    UV,
 
     Count
 };
@@ -13,4 +14,5 @@ enum class AttributeType
 struct AttributeHelper
 {
     static const char* get_name(AttributeType);
+    static AttributeType get_type(const char*);
 };

@@ -59,16 +59,16 @@ void Application::init_buffer(const void* data, std::size_t size)
 
     m_VertexLayout->AddVertexAttribute(AttributeType::Position, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::Color, 3);
+    m_VertexLayout->AddVertexAttribute(AttributeType::UV, 2);
 
     m_VertexBuffer->create(data, m_VertexLayout.get(), size / m_VertexLayout->size());
-    m_VertexBuffer->bind();
 }
 
 void Application::init_index_buffer(const void* data, std::size_t size)
 {
-    m_IndexBuffer = std::make_shared<IndexBuffer>(m_VertexBuffer.get());
+    m_IndexBuffer = std::make_shared<IndexBuffer>();
 
-    m_IndexBuffer->create(data, size);
+    m_IndexBuffer->create(m_VertexBuffer.get(), data, size);
 }
 
 void Application::init_shader()
@@ -83,7 +83,6 @@ void Application::init_shader()
 #endif
 
     m_Shaders->create(vertex_shader_file, frag_shader_file);
-    m_Shaders->bind();
 }
 
 void Application::init_camera()
@@ -101,20 +100,20 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
         return false;
 
     float cube_data[] = {
-        -3, -3, 3, 1, 0, 0, // A (0)
-        3, -3, 3, 0, 1, 0, // B (1)
-        3, 3, 3, 0, 0, 1, // C (2)
-        -3, 3, 3, 1, 1, 0, // D (3)
-        -3, -3, -3, 0, 1, 1, // E (4)
+        -3, -3, 3, 1, 0, 0, 0, 0, // A (0)
+        3, -3, 3, 0, 1, 0, 1, 0, // B (1)
+        3, 3, 3, 0, 0, 1, 1, 1, // C (2)
+        -3, 3, 3, 1, 1, 0, 0, 1, // D (3)
+        /*-3, -3, -3, 0, 1, 1, // E (4)
         3, -3, -3, 1, 0, 1, // F (5)
         3, 3, -3, 1, 0, 0, // G (6)
-        -3, 3, -3, 0, 1, 0 // H (7)
+        -3, 3, -3, 0, 1, 0 // H (7)*/
     };
 
     unsigned int index_data[] = {
         0, 1, 2,
-        1, 3, 2,
-        5, 1, 6,
+        0, 3, 2,
+        /*5, 1, 6,
         6, 1, 2,
         2, 6, 7,
         7, 2, 3,
@@ -123,15 +122,13 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
         0, 4, 5,
         0, 5, 1,
         5, 4, 7,
-        5, 6, 7
+        5, 6, 7*/
     };
 
     init_buffer((void*)cube_data, sizeof(cube_data));
     init_index_buffer(index_data, sizeof(index_data));
     init_shader();
     init_camera();
-
-    m_VertexBuffer->bind_attributes(m_Shaders->get_program_id());
 
     return true;
 }

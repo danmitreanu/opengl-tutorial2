@@ -20,12 +20,12 @@ VertexBuffer::~VertexBuffer()
         glDeleteBuffers(1, &m_Buffer);
 }
 
-void VertexBuffer::bind()
+void VertexBuffer::bind() const
 {
     glBindVertexArray(m_Vao);
 }
 
-void VertexBuffer::unbind()
+void VertexBuffer::unbind() const
 {
     glBindVertexArray(0);
 }
@@ -48,27 +48,18 @@ void VertexBuffer::create(
     int index = 0;
     for (auto& attr : attrs)
     {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, attr.number_of_floats, GL_FLOAT, GL_FALSE, vertex_layout->size(), (void*)offset);
+        glEnableVertexAttribArray((int)attr.type);
+        glVertexAttribPointer((int)attr.type, attr.number_of_floats, GL_FLOAT, GL_FALSE, vertex_layout->size(), (void*)offset);
 
         m_AttribIndeces[(std::size_t)attr.type] = index;
 
         offset += attr.number_of_floats * sizeof(float);
         index++;
     }
-
+ 
     // Unbind VAO and buffer
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void VertexBuffer::bind_attributes(GLuint shader_program)
-{
-    const std::size_t count = (std::size_t)AttributeType::Count;
 
-    for (std::size_t i = 0; i < count; i++)
-    {
-        const char* name = AttributeHelper::get_name((AttributeType)i);
-        glBindAttribLocation(shader_program, m_AttribIndeces[i], name);
-    }
-}
