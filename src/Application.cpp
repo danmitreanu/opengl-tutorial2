@@ -66,7 +66,7 @@ void Application::init_buffer(const void* data, std::size_t size)
 
 void Application::init_index_buffer(const void* data, std::size_t size)
 {
-    m_IndexBuffer = std::make_shared<IndexBuffer>();
+    m_IndexBuffer = std::make_shared<IndexBuffer>(m_VertexBuffer.get());
 
     m_IndexBuffer->create(data, size);
 }
@@ -99,76 +99,35 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
 {
     if (!init_glfw(window_name, width, height))
         return false;
- 
-    float data[] = {
-        1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
-    };
 
     float cube_data[] = {
-        // face 1
-        // triangle 1
-        -3, -3, -3, 1, 0, 0,
-        -3, 3, -3, 0, 1, 0,
-        3, 3, -3, 0, 0, 1,
-        // triangle 2
-        -3, -3, -3, 1, 0, 0,
-        3, -3, -3, 0, 1, 0,
-        3, 3, -3, 0, 0, 1,
+        -3, -3, 3, 1, 0, 0, // A (0)
+        3, -3, 3, 0, 1, 0, // B (1)
+        3, 3, 3, 0, 0, 1, // C (2)
+        -3, 3, 3, 1, 1, 0, // D (3)
+        -3, -3, -3, 0, 1, 1, // E (4)
+        3, -3, -3, 1, 0, 1, // F (5)
+        3, 3, -3, 1, 0, 0, // G (6)
+        -3, 3, -3, 0, 1, 0 // H (7)
+    };
 
-        // face 2
-        // triangle 3
-        -3, 3, 3, 1, 0, 0,
-        -3, 3, -3, 0, 1, 0,
-        3, 3, -3, 0, 0, 1,
-        // triangle 4
-        -3, 3, 3, 1, 0, 0,
-        3, 3, 3, 0, 1, 0,
-        3, 3, -3, 0, 0, 1,
-
-        // face 3
-        // triangle 5
-        -3, -3, 3, 1, 0, 0,
-        -3, 3, 3, 0, 1, 0,
-        3, 3, 3, 0, 0, 1,
-        // triangle 6
-        3, -3, 3, 1, 0, 0,
-        -3, -3, 3, 0, 1, 0,
-        3, 3, 3, 0, 0, 1,
-
-        // face 4
-        // triangle 7
-        3, 3, 3, 1, 0, 0,
-        3, 3, -3, 0, 1, 0,
-        3, -3, 3, 0, 0, 1,
-        // triangle 8
-        3, -3, 3, 1, 0, 0,
-        -3, -3, 3, 0, 1, 0,
-        3, -3, -3, 0, 0, 1,
-
-        // face 5
-        // triangle 9
-        -3, -3, 3, 1, 0, 0,
-        -3, -3, -3, 0, 1, 0,
-        3, -3, -3, 0, 0, 1,
-        // triangle 10
-        3, -3, 3, 1, 0, 0,
-        -3, -3, 3, 0, 1, 0,
-        3, -3, -3, 0, 0, 1,
-
-        // face 6
-        // triangle 11
-        -3, 3, 3, 1, 0, 0,
-        -3, 3, -3, 0, 1, 0,
-        -3, -3, -3, 0, 0, 1,
-        //triangle 12
-        -3, -3, 3, 1, 0, 0,
-        -3, 3, 3, 0, 1, 0,
-        -3, -3, -3, 0, 0, 1
+    unsigned int index_data[] = {
+        0, 1, 2,
+        1, 3, 2,
+        5, 1, 6,
+        6, 1, 2,
+        2, 6, 7,
+        7, 2, 3,
+        3, 0, 7,
+        7, 0, 4,
+        0, 4, 5,
+        0, 5, 1,
+        5, 4, 7,
+        5, 6, 7
     };
 
     init_buffer((void*)cube_data, sizeof(cube_data));
+    init_index_buffer(index_data, sizeof(index_data));
     init_shader();
     init_camera();
 
@@ -210,11 +169,13 @@ void Application::render()
     glClear(GL_COLOR_BUFFER_BIT);
  
     m_VertexBuffer->bind();
+    m_IndexBuffer->bind();
     m_Shaders->bind();
  
     m_Shaders->set_uniform(Uniform::MVP, m_Camera.get_mvp(m_ModelMatrix));
  
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
     m_VertexBuffer->unbind();
 }

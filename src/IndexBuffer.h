@@ -1,5 +1,8 @@
 #pragma once
 
+#include "OpenGL.h"
+#include "VertexBuffer.h"
+
 class IndexBuffer
 {
 private:
@@ -7,7 +10,7 @@ private:
     GLuint m_Vao;
 
 public:
-    IndexBuffer(GLuint vao);
+    IndexBuffer(const VertexBuffer*);
     ~IndexBuffer();
 
     void bind();

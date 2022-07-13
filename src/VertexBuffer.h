@@ -15,6 +15,8 @@ private:
 
     std::array<int, (std::size_t)AttributeType::Count> m_AttribIndeces;
 
+    friend class IndexBuffer;
+
 public:
     VertexBuffer();
     ~VertexBuffer();
