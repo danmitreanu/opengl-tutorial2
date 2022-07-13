@@ -49,11 +49,19 @@ void Camera::on_yaw(float rad)
 {
     m_Yaw += rad;
 }
+
 void Camera::on_pitch(float rad)
 {
+    const float half_pi = 90.0f;
     m_Pitch += rad;
-}
 
+    // clamp between -pi/2 ; pi/2
+    if (m_Pitch > half_pi)
+        m_Pitch = half_pi;
+
+    if (m_Pitch < -half_pi)
+        m_Pitch = -half_pi;
+}
 
 void Camera::on_up_key(float up)
 {
