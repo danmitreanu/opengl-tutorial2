@@ -6,52 +6,10 @@
 #include "OpenGL.h"
 
 #include "Application.h"
+#include "ApplicationBase.h"
 #include "VertexLayout.h"
 #include "ShaderProgram.h"
 #include "AttributeHelper.h"
-
-bool Application::init_glfw(const char* window_name, std::size_t width, std::size_t height)
-{
-    if (!glfwInit())
-        return false;
-
-    m_Width = width;
-    m_Height = height;
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    m_Window = glfwCreateWindow(width, height, window_name, NULL, NULL);
-
-    if (!m_Window)
-    {
-        glfwTerminate();
-        return false;
-    }
-
-    glfwMakeContextCurrent(m_Window);
-    glfwSetKeyCallback(m_Window, Application::key_callback);
-    glfwSetFramebufferSizeCallback(m_Window, Application::framebuffer_size_callback);
-    glfwSetWindowUserPointer(m_Window, this);
-
-    int fb_width, fb_height;
-    glfwGetFramebufferSize(m_Window, &fb_width, &fb_height);
-    glViewport(0, 0, fb_width, fb_height);
-    m_Width = fb_width;
-    m_Height = fb_height;
-
-#ifdef _WIN32
-    if (glewInit() != GLEW_OK)
-    {
-        std::cout << "GLEW could not be initialized." << std::endl;
-        return false;
-    }
-#endif
-
-    return true;
-}
 
 void Application::init_buffer()
 {
@@ -119,7 +77,7 @@ void Application::init_shader()
 
 void Application::init_camera()
 {
-    m_Camera.change_framebuff_dimensions(m_Width, m_Height);
+    m_Camera.change_framebuff_dimensions(get_width(), get_height());
 
     Vector3f look_at{ 0.0, 0.0f, 0.0f };
  
@@ -135,6 +93,9 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
 {
     if (!init_glfw(window_name, width, height))
         return false;
+
+    this->set_key_callback(Application::key_callback);
+    this->set_framebuffer_callback(Application::framebuffer_size_callback);
  
     init_buffer();
     init_shader();
@@ -142,23 +103,6 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
     init_texture();
 
     return true;
-}
-
-void Application::run()
-{
-    float delta_time = glfwGetTime();
-
-    while (!glfwWindowShouldClose(m_Window))
-    {
-        float now_time = glfwGetTime();
-
-        this->update(now_time - delta_time);
-        this->render();
-        delta_time = now_time;
-
-        glfwSwapBuffers(m_Window);
-        glfwPollEvents();
-    }
 }
 
 void Application::update(const float delta_seconds)
@@ -194,15 +138,9 @@ void Application::render()
     m_VertexBuffer->unbind();
 }
 
-void Application::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Application::key_callback(void* app, int key, int action)
 {
-    Application* handler = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
-
-    if (key == GLFW_KEY_ESCAPE)
-    {
-        glfwSetWindowShouldClose(handler->m_Window, GLFW_TRUE);
-        return;
-    }
+    Application* handler = reinterpret_cast<Application*>(app);
 
     switch (action)
     {
@@ -216,14 +154,10 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
     }
 }
 
-void Application::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void Application::framebuffer_size_callback(void* app, std::size_t width, std::size_t height)
 {
-    Application* handler = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
-    handler->m_Width = width;
-    handler->m_Height = height;
+    Application* handler = reinterpret_cast<Application*>(app);
     handler->m_Camera.change_framebuff_dimensions(width, height);
-
-    glViewport(0, 0, width, height);
 }
 
 void Application::key_down(int key)
