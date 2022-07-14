@@ -60,10 +60,10 @@ void Application::init_buffer()
     m_IndexBuffer->create(m_VertexBuffer.get(), indices.data(), indices.size());
 }
 
-
 void Application::init_shader()
 {
-    m_Shaders = std::make_shared<ShaderProgram>();
+    m_Shaders = m_ResourceManager.get_shader("main_shader");
+
 #ifndef _WIN32
     const char* vertex_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.vs";
     const char* frag_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.fs";
