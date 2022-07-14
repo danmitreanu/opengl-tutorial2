@@ -21,13 +21,13 @@ void IndexBuffer::bind()
 }
 
 void IndexBuffer::create(const VertexBuffer* vertex_buffer,
-    const void* data,
-    const std::size_t size)
+    const uint32_t* data,
+    const std::size_t index_count)
 {
     vertex_buffer->bind();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Ibo);
 
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_count * sizeof(uint32_t), data, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -78,7 +78,7 @@ void Camera::on_move_forward(float distance)
     Vector3f dir{ 1.0f, 0.0f, 0.0f };
  
     dir.Rotate(m_Yaw, m_Z);
- 
+
     m_LookAt = m_LookAt + dir * distance;
 }
 
@@ -94,7 +94,7 @@ void Camera::on_move_side(float distance)
 void Camera::update_camera_matrices()
 {
     Vector3f dir{ 1.0f, 0.0f, 0.0f };
-   
+ 
     dir.Rotate(m_Pitch, m_Y);
     dir.Rotate(m_Yaw, m_Z);
 

@@ -139,7 +139,7 @@ void ShaderProgram::create(const char* vertex_shader_file, const char* frag_shad
     //init_attributes();
 }
 
-void ShaderProgram::bind()
+void ShaderProgram::bind() const
 {
     glUseProgram(m_ShaderProgram);
 }
@@ -158,6 +158,12 @@ GLint ShaderProgram::get_uniform_pos(Uniform uniform)
 {
     const char* name = UniformHelper::get_name(uniform);
     return glGetUniformLocation(m_ShaderProgram, name);
+}
+
+void ShaderProgram::set_uniform(Uniform uniform, int value)
+{
+    this->ensure_bound();
+    glUniform1i(m_Uniforms[(std::size_t)uniform], value);
 }
 
 void ShaderProgram::set_uniform(Uniform uniform, float value)

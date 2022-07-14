@@ -10,6 +10,7 @@
 #include "ShaderProgram.h"
 #include "Camera.h"
 #include "Math3D.h"
+#include "Texture.h"
 
 #include "Movement.h"
 
@@ -40,15 +41,18 @@ private:
 
     std::shared_ptr<ShaderProgram> m_Shaders;
 
+    std::shared_ptr<Texture> m_Texture;
+
     Matrix4f m_ModelMatrix;
     Movement m_Movement;
     Vector3f m_Offset{ 0, 0, 0 };
 
     bool init_glfw(const char*, std::size_t, std::size_t);
-    void init_buffer(const void*, std::size_t);
-    void init_index_buffer(const void*, std::size_t);
+    void init_buffer();
+    //void init_index_buffer(const void*, std::size_t);
     void init_shader();
     void init_camera();
+    void init_texture();
 
     static void key_callback(GLFWwindow*, int, int, int, int);
     static void framebuffer_size_callback(GLFWwindow*, int, int);

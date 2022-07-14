@@ -14,5 +14,5 @@ public:
     ~IndexBuffer();
 
     void bind();
-    void create(const VertexBuffer*, const void*, const std::size_t);
+    void create(const VertexBuffer*, const uint32_t* data, const std::size_t index_count);
 };

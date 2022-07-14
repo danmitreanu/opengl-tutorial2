@@ -40,9 +40,10 @@ public:
     // Create with vertex shader and frag shader files
     void create(const char*, const char*);
  
-    void bind();
+    void bind() const;
 
     GLint get_uniform_pos(Uniform);
+    void set_uniform(Uniform, int);
     void set_uniform(Uniform, float);
     void set_uniform(Uniform, const Vector2f&);
     void set_uniform(Uniform, const Matrix4f&);

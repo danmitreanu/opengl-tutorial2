@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 #include "OpenGL.h"
 
@@ -52,24 +53,55 @@ bool Application::init_glfw(const char* window_name, std::size_t width, std::siz
     return true;
 }
 
-void Application::init_buffer(const void* data, std::size_t size)
+void Application::init_buffer()
 {
     m_VertexLayout = std::make_shared<VertexLayout>();
     m_VertexBuffer = std::make_shared<VertexBuffer>();
+    m_IndexBuffer = std::make_shared<IndexBuffer>();
 
     m_VertexLayout->AddVertexAttribute(AttributeType::Position, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::Color, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::UV, 2);
+    
+    struct Vertex
+    {
+        Vector3f pos;
+        Vector3f c;
+        Vector2f uv;
+    };
+ 
+    std::vector<Vertex> vertices;
+    std::vector<uint32_t> indices;
+ 
+    for (std::size_t y = 0; y < 100; y++)
+    {
+        for (std::size_t x = 0; x < 100; x++)
+        {
+            Vertex v;
+            v.pos = Vector3f(float(x), float(y), -100.0f);
+            v.c = Vector3f(1.0f, 0.0f, 0.0f);
+            v.uv = Vector2f(float(x) / 100.0f, float(y) / 100.0f);
+            vertices.push_back(v);
+        }
+    }
+ 
+    for (std::size_t y = 0; y < 99; y++)
+    {
+        for (std::size_t x = 0; x < 99; x++)
+        {
+            indices.push_back(y * 100 + x);
+            indices.push_back(y * 100 + x + 1);
+            indices.push_back((y + 1) * 100 + x);
+            indices.push_back(y * 100 + x + 1);
+            indices.push_back((y + 1) * 100 + x + 1);
+            indices.push_back((y + 1) * 100 + x);
+        }
+    }
 
-    m_VertexBuffer->create(data, m_VertexLayout.get(), size / m_VertexLayout->size());
+    m_VertexBuffer->create(vertices.data(), m_VertexLayout.get(), vertices.size());
+    m_IndexBuffer->create(m_VertexBuffer.get(), indices.data(), indices.size());
 }
 
-void Application::init_index_buffer(const void* data, std::size_t size)
-{
-    m_IndexBuffer = std::make_shared<IndexBuffer>();
-
-    m_IndexBuffer->create(m_VertexBuffer.get(), data, size);
-}
 
 void Application::init_shader()
 {
@@ -90,8 +122,16 @@ void Application::init_camera()
     m_Camera.change_framebuff_dimensions(m_Width, m_Height);
 
     Vector3f look_at{ 0.0, 0.0f, 0.0f };
-    
+ 
     m_Camera.set(look_at);
+}
+
+void Application::init_texture()
+{
+    m_Texture = std::make_shared<Texture>();
+
+    const char* tex_file = "/Users/danm3/opengl/cmake/resources/mc.jpeg";
+    m_Texture->load(tex_file);
 }
 
 bool Application::initialize(const char* window_name, std::size_t width, std::size_t height)
@@ -99,36 +139,13 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
     if (!init_glfw(window_name, width, height))
         return false;
 
-    float cube_data[] = {
-        -3, -3, 3, 1, 0, 0, 0, 0, // A (0)
-        3, -3, 3, 0, 1, 0, 1, 0, // B (1)
-        3, 3, 3, 0, 0, 1, 1, 1, // C (2)
-        -3, 3, 3, 1, 1, 0, 0, 1, // D (3)
-        -3, -3, -3, 0, 1, 1, 0, 0, // E (4)
-        3, -3, -3, 1, 0, 1, 1, 0, // F (5)
-        3, 3, -3, 1, 0, 0, 1, 1, // G (6)
-        -3, 3, -3, 0, 1, 0, 0, 1 // H (7)
-    };
-
-    unsigned int index_data[] = {
-        0, 1, 2,
-        2, 3, 0,
-        4, 5, 6,
-        6, 7, 4,
-        4, 0, 1,
-        4, 5, 1,
-        5, 6, 2,
-        2, 1, 5,
-        6, 2, 3,
-        3, 6, 7,
-        7, 3, 0,
-        0, 7, 4
-    };
-
-    init_buffer((void*)cube_data, sizeof(cube_data));
-    init_index_buffer(index_data, sizeof(index_data));
+   
+    
+    init_buffer();
+    //init_index_buffer();
     init_shader();
     init_camera();
+    init_texture();
 
     return true;
 }
@@ -162,17 +179,23 @@ void Application::update(const float delta_seconds)
 
 void Application::render()
 {
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClearDepth(1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
     m_VertexBuffer->bind();
     m_IndexBuffer->bind();
-    m_Shaders->bind();
  
+    m_Texture->bind(0);
+
+    m_Shaders->bind();
+    //m_Shaders->set_uniform(Uniform::Texture0, 0);
     m_Shaders->set_uniform(Uniform::MVP, m_Camera.get_mvp(m_ModelMatrix));
  
     //glDrawArrays(GL_TRIANGLES, 0, 36);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 58806, GL_UNSIGNED_INT, 0);
 
     m_VertexBuffer->unbind();
 }
@@ -241,8 +264,8 @@ void Application::key_up(int key)
 
 void Application::update_offset(float delta_seconds)
 {
-    const float speed = 1.0f; // units per sec
-    const float camera_coeff = 100.0f;
+    const float speed = 150.0f; // units per sec
+    const float camera_coeff = 0.5f;
 
     float diff = delta_seconds * speed;
 
@@ -261,12 +284,12 @@ void Application::update_offset(float delta_seconds)
     if (m_Movement.up != m_Movement.down)
     {
         float direction = -1.0f * int(m_Movement.up) + 1.0f * int(m_Movement.down);
-        m_Camera.on_move_forward(direction * diff * camera_coeff);
+        m_Camera.on_move_forward(direction * diff);
     }
 
     if (m_Movement.left != m_Movement.right)
     {
         float direction = 1.0f * int(m_Movement.left) - 1.0f * int(m_Movement.right);
-        m_Camera.on_move_side(direction * diff * camera_coeff);
+        m_Camera.on_move_side(direction * diff);
     }
 }
