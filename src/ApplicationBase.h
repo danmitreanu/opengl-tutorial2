@@ -12,6 +12,7 @@ class ApplicationBase
 {
 private:
     GLFWwindow* m_Window = nullptr;
+    // Width and height for the FRAMEBUFFER
     std::size_t m_Width;
     std::size_t m_Height;
 
