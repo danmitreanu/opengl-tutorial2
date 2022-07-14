@@ -5,13 +5,13 @@
 
 #include "OpenGL.h"
 
-#include "Application.h"
+#include "Engine.h"
 #include "ApplicationBase.h"
 #include "VertexLayout.h"
 #include "ShaderProgram.h"
 #include "AttributeHelper.h"
 
-void Application::init_buffer()
+void Engine::init_buffer()
 {
     m_VertexLayout = std::make_shared<VertexLayout>();
     m_VertexBuffer = std::make_shared<VertexBuffer>();
@@ -60,7 +60,7 @@ void Application::init_buffer()
     m_IndexBuffer->create(m_VertexBuffer.get(), indices.data(), indices.size());
 }
 
-void Application::init_shader()
+void Engine::init_shader()
 {
     m_Shaders = get_resource_manager().get_shader("main_shader");
 
@@ -75,7 +75,7 @@ void Application::init_shader()
     m_Shaders->create(vertex_shader_file, frag_shader_file);
 }
 
-void Application::init_camera()
+void Engine::init_camera()
 {
     m_Camera.change_framebuff_dimensions(get_width(), get_height());
 
@@ -84,18 +84,18 @@ void Application::init_camera()
     m_Camera.set(look_at);
 }
 
-void Application::init_texture()
+void Engine::init_texture()
 {
     m_Texture = get_resource_manager().get_texture("/Users/danm3/opengl/cmake/resources/mc.jpeg");
 }
 
-bool Application::initialize(const char* window_name, std::size_t width, std::size_t height)
+bool Engine::initialize(const char* window_name, std::size_t width, std::size_t height)
 {
     if (!init_glfw(window_name, width, height))
         return false;
 
-    this->set_key_callback(Application::key_callback);
-    this->set_framebuffer_callback(Application::framebuffer_size_callback);
+    this->set_key_callback(Engine::key_callback);
+    this->set_framebuffer_callback(Engine::framebuffer_size_callback);
  
     init_buffer();
     init_shader();
@@ -105,7 +105,7 @@ bool Application::initialize(const char* window_name, std::size_t width, std::si
     return true;
 }
 
-void Application::update(const float delta_seconds)
+void Engine::update(const float delta_seconds)
 {
     update_offset(delta_seconds);
 
@@ -115,7 +115,7 @@ void Application::update(const float delta_seconds)
     m_Camera.update_camera_matrices();
 }
 
-void Application::render()
+void Engine::render()
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -138,9 +138,9 @@ void Application::render()
     m_VertexBuffer->unbind();
 }
 
-void Application::key_callback(void* app, int key, int action)
+void Engine::key_callback(void* app, int key, int action)
 {
-    Application* handler = reinterpret_cast<Application*>(app);
+    Engine* handler = reinterpret_cast<Engine*>(app);
 
     switch (action)
     {
@@ -154,13 +154,13 @@ void Application::key_callback(void* app, int key, int action)
     }
 }
 
-void Application::framebuffer_size_callback(void* app, std::size_t width, std::size_t height)
+void Engine::framebuffer_size_callback(void* app, std::size_t width, std::size_t height)
 {
-    Application* handler = reinterpret_cast<Application*>(app);
+    Engine* handler = reinterpret_cast<Engine*>(app);
     handler->m_Camera.change_framebuff_dimensions(width, height);
 }
 
-void Application::key_down(int key)
+void Engine::key_down(int key)
 {
     switch (key)
     {
@@ -175,7 +175,7 @@ void Application::key_down(int key)
     }
 }
 
-void Application::key_up(int key)
+void Engine::key_up(int key)
 {
     switch (key)
     {
@@ -190,7 +190,7 @@ void Application::key_up(int key)
     }
 }
 
-void Application::update_offset(float delta_seconds)
+void Engine::update_offset(float delta_seconds)
 {
     const float speed = 150.0f; // units per sec
     const float camera_coeff = 0.5f;

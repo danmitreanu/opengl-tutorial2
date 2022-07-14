@@ -1,8 +1,8 @@
-#include "Application.h"
+#include "Engine.h"
 
 int main()
 {
-    Application a;
+    Engine a;
     if (!a.initialize("demo", 800, 600))
         return 1;
 

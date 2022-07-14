@@ -16,7 +16,7 @@
 
 #include "Movement.h"
 
-class Application : public ApplicationBase
+class Engine : public ApplicationBase
 {
 private:
     Camera m_Camera;
@@ -49,8 +49,8 @@ private:
     void render();
 
 public:
-    Application() = default;
-    Application& operator=(const Application&) = delete;
+    Engine() = default;
+    Engine& operator=(const Engine&) = delete;
 
     bool initialize(const char* window_name, std::size_t width, std::size_t height);
 };
