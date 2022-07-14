@@ -27,7 +27,6 @@ private:
 
     std::shared_ptr<ShaderProgram> m_Shaders;
 
-    ResourceManager m_ResourceManager;
     std::shared_ptr<Texture> m_Texture;
 
     Matrix4f m_ModelMatrix;

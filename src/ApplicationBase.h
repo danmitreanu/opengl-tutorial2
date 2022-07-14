@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "OpenGL.h"
+#include "ResourceManager.h"
 
 typedef void (*KeyCallback)(void*, int, int);
 typedef void (*FramebuffCallback)(void*, std::size_t, std::size_t);
@@ -17,6 +18,8 @@ private:
     KeyCallback m_KeyCallback = nullptr;
     FramebuffCallback m_FramebuffCallback = nullptr;
 
+    ResourceManager m_ResourceManager;
+
     static void key_callback(GLFWwindow*, int, int, int, int);
     static void framebuffer_size_callback(GLFWwindow*, int, int);
 
@@ -27,6 +30,8 @@ protected:
 
     virtual void update(float) = 0;
     virtual void render() = 0;
+
+    inline ResourceManager& get_resource_manager() { return m_ResourceManager; }
 
     void set_key_callback(KeyCallback);
     void set_framebuffer_callback(FramebuffCallback);

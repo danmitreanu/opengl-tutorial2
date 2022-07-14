@@ -62,7 +62,7 @@ void Application::init_buffer()
 
 void Application::init_shader()
 {
-    m_Shaders = m_ResourceManager.get_shader("main_shader");
+    m_Shaders = get_resource_manager().get_shader("main_shader");
 
 #ifndef _WIN32
     const char* vertex_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.vs";
@@ -86,7 +86,7 @@ void Application::init_camera()
 
 void Application::init_texture()
 {
-    m_Texture = m_ResourceManager.get_texture("/Users/danm3/opengl/cmake/resources/mc.jpeg");
+    m_Texture = get_resource_manager().get_texture("/Users/danm3/opengl/cmake/resources/mc.jpeg");
 }
 
 bool Application::initialize(const char* window_name, std::size_t width, std::size_t height)
