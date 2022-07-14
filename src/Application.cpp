@@ -84,7 +84,7 @@ void Application::init_buffer()
             vertices.push_back(v);
         }
     }
- 
+
     for (std::size_t y = 0; y < 99; y++)
     {
         for (std::size_t x = 0; x < 99; x++)
@@ -128,21 +128,15 @@ void Application::init_camera()
 
 void Application::init_texture()
 {
-    m_Texture = std::make_shared<Texture>();
-
-    const char* tex_file = "/Users/danm3/opengl/cmake/resources/mc.jpeg";
-    m_Texture->load(tex_file);
+    m_Texture = m_ResourceManager.get_texture("/Users/danm3/opengl/cmake/resources/mc.jpeg");
 }
 
 bool Application::initialize(const char* window_name, std::size_t width, std::size_t height)
 {
     if (!init_glfw(window_name, width, height))
         return false;
-
-   
-    
+ 
     init_buffer();
-    //init_index_buffer();
     init_shader();
     init_camera();
     init_texture();

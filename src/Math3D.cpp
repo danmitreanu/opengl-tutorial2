@@ -182,7 +182,6 @@ void Matrix4f::InitTranslationTransform(const Vector3f& Pos)
     InitTranslationTransform(Pos.x, Pos.y, Pos.z);
 }
 
-
 void Matrix4f::InitCameraTransform(const Vector3f& Target, const Vector3f& Up)
 {
     Vector3f N = Target;
@@ -202,7 +201,6 @@ void Matrix4f::InitCameraTransform(const Vector3f& Target, const Vector3f& Up)
     m[2][0] = N.x;   m[2][1] = N.y;   m[2][2] = N.z;   m[2][3] = 0.0f;
     m[3][0] = 0.0f;  m[3][1] = 0.0f;  m[3][2] = 0.0f;  m[3][3] = 1.0f;
 }
-
 
 void Matrix4f::InitCameraTransform(const Vector3f& Pos, const Vector3f& Target, const Vector3f& Up)
 {

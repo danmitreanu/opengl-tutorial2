@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "Math3D.h"
 #include "Texture.h"
+#include "ResourceManager.h"
 
 #include "Movement.h"
 
@@ -41,6 +42,7 @@ private:
 
     std::shared_ptr<ShaderProgram> m_Shaders;
 
+    ResourceManager m_ResourceManager;
     std::shared_ptr<Texture> m_Texture;
 
     Matrix4f m_ModelMatrix;
