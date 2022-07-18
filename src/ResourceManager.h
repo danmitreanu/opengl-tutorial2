@@ -3,22 +3,19 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "Texture.h"
 #include "ShaderProgram.h"
 
-template <typename T>
-struct Resource
-{
-    std::string name;
-    std::shared_ptr<T> resource;
-};
-
 class ResourceManager
 {
 private:
-    std::vector<Resource<Texture>> m_Textures;
-    std::vector<Resource<ShaderProgram>> m_ShaderPrograms;
+    static inline const std::string m_TexturePath = "/Users/danm3/opengl/cmake/resources/";
+    static inline const std::string m_ShadersPath = "/Users/danm3/opengl/cmake/shaders/";
+
+    std::map<std::string, std::shared_ptr<Texture>> m_Textures;
+    std::map<std::string, std::shared_ptr<ShaderProgram>> m_ShaderPrograms;
 
     void load_texture(const std::string&, std::shared_ptr<Texture>&);
     void load_shader(const std::string&, std::shared_ptr<ShaderProgram>&);
@@ -26,6 +23,6 @@ private:
 public:
     ResourceManager() = default;
 
-    std::shared_ptr<Texture> get_texture(const char* tex_file);
-    std::shared_ptr<ShaderProgram> get_shader(const char* name);
+    std::shared_ptr<Texture> get_texture(const std::string& tex_file);
+    std::shared_ptr<ShaderProgram> get_shader(const std::string& name);
 };

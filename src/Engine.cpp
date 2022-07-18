@@ -62,17 +62,7 @@ void Engine::init_buffer()
 
 void Engine::init_shader()
 {
-    m_Shaders = get_resource_manager().get_shader("main_shader");
-
-#ifndef _WIN32
-    const char* vertex_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.vs";
-    const char* frag_shader_file = "/Users/danm3/opengl/cmake/shaders/shader.fs";
-#else
-    const char* vertex_shader_file = "X:\\opengl-tutorial2\\shaders\\shader.vs";
-    const char* frag_shader_file = "X:\\opengl-tutorial2\\shaders\\shader.fs";
-#endif
-
-    m_Shaders->create(vertex_shader_file, frag_shader_file);
+    m_Shaders = get_resource_manager().get_shader("shader");
 }
 
 void Engine::init_camera()
@@ -86,17 +76,14 @@ void Engine::init_camera()
 
 void Engine::init_texture()
 {
-    m_Texture = get_resource_manager().get_texture("/Users/danm3/opengl/cmake/resources/mc.jpeg");
+    m_Texture = get_resource_manager().get_texture("mc.jpeg");
 }
 
 bool Engine::initialize(const char* window_name, std::size_t width, std::size_t height)
 {
-    if (!init_glfw(window_name, width, height))
+    if (!init_window(window_name, width, height))
         return false;
 
-    this->set_key_callback(Engine::key_callback);
-    this->set_framebuffer_callback(Engine::framebuffer_size_callback);
- 
     init_buffer();
     init_shader();
     init_camera();
@@ -132,62 +119,43 @@ void Engine::render()
     //m_Shaders->set_uniform(Uniform::Texture0, 0);
     m_Shaders->set_uniform(Uniform::MVP, m_Camera.get_mvp(m_ModelMatrix));
  
-    //glDrawArrays(GL_TRIANGLES, 0, 36);
     glDrawElements(GL_TRIANGLES, 58806, GL_UNSIGNED_INT, 0);
 
     m_VertexBuffer->unbind();
 }
 
-void Engine::key_callback(void* app, int key, int action)
+void Engine::key_callback(ApplicationBase* app, ApplicationBaseKey key, ApplicationBaseKeyAction action)
 {
     Engine* handler = reinterpret_cast<Engine*>(app);
 
-    switch (action)
-    {
-        case GLFW_PRESS:
-            handler->key_down(key);
-            return;
+    bool pressed = action == APP_KEY_PRESS;
+    bool released = action == APP_KEY_RELEASE;
 
-        case GLFW_RELEASE:
-            handler->key_up(key);
-            return;
-    }
+    bool active = pressed || !released;
+    handler->on_key(key, active);
 }
 
-void Engine::framebuffer_size_callback(void* app, std::size_t width, std::size_t height)
+void Engine::framebuffer_callback(ApplicationBase* app, std::size_t width, std::size_t height)
 {
     Engine* handler = reinterpret_cast<Engine*>(app);
     handler->m_Camera.change_framebuff_dimensions(width, height);
 }
 
-void Engine::key_down(int key)
+void Engine::on_key(ApplicationBaseKey key, bool pressed)
 {
     switch (key)
     {
-        case GLFW_KEY_W: m_Movement.up = true; break;
-        case GLFW_KEY_S: m_Movement.down = true; break;
-        case GLFW_KEY_A: m_Movement.left = true; break;
-        case GLFW_KEY_D: m_Movement.right = true; break;
-        case GLFW_KEY_Q: m_Movement.yaw_left = true; break;
-        case GLFW_KEY_E: m_Movement.yaw_right = true; break;
-        case GLFW_KEY_Z: m_Movement.pitch_up = true; break;
-        case GLFW_KEY_X: m_Movement.pitch_down = true; break;
-    }
-}
+        case APP_KEY_W: m_Movement.up = pressed; break;
+        case APP_KEY_S: m_Movement.down = pressed; break;
+        case APP_KEY_A: m_Movement.left = pressed; break;
+        case APP_KEY_D: m_Movement.right = pressed; break;
+        case APP_KEY_Q: m_Movement.yaw_left = pressed; break;
+        case APP_KEY_E: m_Movement.yaw_right = pressed; break;
+        case APP_KEY_Z: m_Movement.pitch_up = pressed; break;
+        case APP_KEY_X: m_Movement.pitch_down = pressed; break;
 
-void Engine::key_up(int key)
-{
-    switch (key)
-    {
-        case GLFW_KEY_W: m_Movement.up = false; break;
-        case GLFW_KEY_S: m_Movement.down = false; break;
-        case GLFW_KEY_A: m_Movement.left = false; break;
-        case GLFW_KEY_D: m_Movement.right = false; break;
-        case GLFW_KEY_Q: m_Movement.yaw_left = false; break;
-        case GLFW_KEY_E: m_Movement.yaw_right = false; break;
-        case GLFW_KEY_Z: m_Movement.pitch_up = false; break;
-        case GLFW_KEY_X: m_Movement.pitch_down = false; break;
-    }
+        default: break;
+    };
 }
 
 void Engine::update_offset(float delta_seconds)

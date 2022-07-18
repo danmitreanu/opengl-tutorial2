@@ -13,6 +13,7 @@
 #include "Texture.h"
 #include "ResourceManager.h"
 #include "ApplicationBase.h"
+#include "ApplicationBaseKeys.h"
 
 #include "Movement.h"
 
@@ -38,10 +39,9 @@ private:
     void init_camera();
     void init_texture();
 
-    static void key_callback(void*, int, int);
-    static void framebuffer_size_callback(void*, std::size_t, std::size_t);
-    void key_down(int);
-    void key_up(int);
+    void key_callback(ApplicationBase*, ApplicationBaseKey, ApplicationBaseKeyAction);
+    void framebuffer_callback(ApplicationBase*, std::size_t, std::size_t);
+    void on_key(ApplicationBaseKey, bool);
     void update_offset(float);
 
     // ApplicationBase implementations

@@ -1,6 +1,7 @@
 #include "ApplicationBase.h"
+#include "ApplicationBaseKeys.h"
 
-bool ApplicationBase::init_glfw(const char* window_name, std::size_t width, std::size_t height)
+bool ApplicationBase::init_window(const char* window_name, std::size_t width, std::size_t height)
 {
     if (!glfwInit())
         return false;
@@ -43,16 +44,6 @@ bool ApplicationBase::init_glfw(const char* window_name, std::size_t width, std:
     return true;
 }
 
-void ApplicationBase::set_key_callback(KeyCallback callback)
-{
-    m_KeyCallback = callback;
-}
-
-void ApplicationBase::set_framebuffer_callback(FramebuffCallback callback)
-{
-    m_FramebuffCallback = callback;
-}
-
 void ApplicationBase::key_callback(GLFWwindow* window, int keycode, int scancode, int action, int mods)
 {
     ApplicationBase* handler = reinterpret_cast<ApplicationBase*>(glfwGetWindowUserPointer(window));
@@ -62,8 +53,9 @@ void ApplicationBase::key_callback(GLFWwindow* window, int keycode, int scancode
         return;
     }
 
-    if (handler->m_KeyCallback)
-        handler->m_KeyCallback(handler, keycode, action);
+    auto app_key = get_key(keycode);
+    auto app_action = get_key_action(action);
+    handler->key_callback(handler, app_key, app_action);
 }
 
 void ApplicationBase::framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -74,8 +66,50 @@ void ApplicationBase::framebuffer_size_callback(GLFWwindow* window, int width, i
     handler->m_Height = height;
     glViewport(0, 0, width, height);
 
-    if (handler->m_FramebuffCallback)
-        handler->m_FramebuffCallback(handler, width, height);
+    handler->framebuffer_callback(handler, width, height);
+}
+
+ApplicationBaseKey ApplicationBase::get_key(int keycode)
+{
+    int ka = (int)APP_KEY_A;
+    int k0 = (int)APP_KEY_0;
+
+    if (keycode >= GLFW_KEY_A && keycode <= GLFW_KEY_Z)
+    {
+        return (ApplicationBaseKey)(ka + keycode - (int)GLFW_KEY_A);
+    }
+
+    if (keycode >= GLFW_KEY_0 && keycode <= GLFW_KEY_9)
+    {
+        return (ApplicationBaseKey)(k0 + keycode - (int)GLFW_KEY_0);
+    }
+
+    switch (keycode)
+    {
+        case GLFW_KEY_TAB:              return APP_KEY_TAB;
+        case GLFW_KEY_ESCAPE:           return APP_KEY_ESC;
+        case GLFW_KEY_UP:               return APP_KEY_UP;
+        case GLFW_KEY_DOWN:             return APP_KEY_DOWN;
+        case GLFW_KEY_LEFT:             return APP_KEY_LEFT;
+        case GLFW_KEY_RIGHT:            return APP_KEY_RIGHT;
+        case GLFW_KEY_LEFT_SHIFT:       return APP_KEY_LSHIFT;
+        case GLFW_KEY_RIGHT_SHIFT:      return APP_KEY_RSHIFT;
+        case GLFW_KEY_LEFT_CONTROL:     return APP_KEY_LCTRL;
+        case GLFW_KEY_RIGHT_CONTROL:    return APP_KEY_RCTRL;
+
+        default:                        return APP_KEY_UNKNOWN;
+    };
+}
+
+ApplicationBaseKeyAction ApplicationBase::get_key_action(int action)
+{
+    switch (action)
+    {
+        case GLFW_PRESS:    return APP_KEY_PRESS;
+        case GLFW_RELEASE:  return APP_KEY_RELEASE;
+
+        default:            return APP_KEY_NONE;
+    }
 }
 
 void ApplicationBase::run()

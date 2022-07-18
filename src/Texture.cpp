@@ -9,6 +9,8 @@ Texture::Texture()
     glGenTextures(1, &m_Texture);
 }
 
+// dtor
+
 void Texture::load(const char* filename)
 {
     glBindTexture(GL_TEXTURE_2D, m_Texture);

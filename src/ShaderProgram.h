@@ -37,7 +37,7 @@ public:
 
     inline GLuint get_program_id() const { return m_ShaderProgram; }
 
-    // Create with vertex shader and frag shader files
+    // Create with vertex shader and frag shader files.
     void create(const char*, const char*);
  
     void bind() const;
