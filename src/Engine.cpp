@@ -96,9 +96,12 @@ void Engine::update(const float delta_seconds)
 {
     update_offset(delta_seconds);
 
-    m_ModelMatrix.InitIdentity();
-    m_ModelMatrix.InitTranslationTransform(m_Offset.x, m_Offset.y, 0.0f);
-    
+    Matrix4f translate;
+    Matrix4f rotate;
+    translate.InitTranslationTransform(Vector3f{ -200.0f, -50.0f, 0.0f });
+    rotate.InitRotateTransform(0, 0, 0);
+    m_ModelMatrix = translate * rotate;
+
     m_Camera.update_camera_matrices();
 }
 

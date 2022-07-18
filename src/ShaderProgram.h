@@ -19,7 +19,7 @@ private:
 
     std::array<GLuint, (std::size_t)Uniform::Count> m_Uniforms;
 
-    void init_program();
+    bool init_program();
     void init_uniforms();
     void init_attributes();
 
@@ -38,7 +38,7 @@ public:
     inline GLuint get_program_id() const { return m_ShaderProgram; }
 
     // Create with vertex shader and frag shader files.
-    void create(const char*, const char*);
+    bool create(const char*, const char*);
  
     void bind() const;
 

@@ -7,7 +7,6 @@ class IndexBuffer
 {
 private:
     GLuint m_Ibo;
-    GLuint m_Vao;
 
 public:
     IndexBuffer();

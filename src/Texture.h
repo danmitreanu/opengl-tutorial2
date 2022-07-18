@@ -12,8 +12,8 @@ private:
 
 public:
     Texture();
-    //dtor
+    ~Texture();
 
-    void load(const char* filename);
+    bool load(const char* filename);
     void bind(int slot);
 };

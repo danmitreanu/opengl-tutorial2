@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 #include "Texture.h"
 #include "ShaderProgram.h"
@@ -14,8 +14,8 @@ private:
     static inline const std::string m_TexturePath = "/Users/danm3/opengl/cmake/resources/";
     static inline const std::string m_ShadersPath = "/Users/danm3/opengl/cmake/shaders/";
 
-    std::map<std::string, std::shared_ptr<Texture>> m_Textures;
-    std::map<std::string, std::shared_ptr<ShaderProgram>> m_ShaderPrograms;
+    std::unordered_map<std::string, std::shared_ptr<Texture>> m_Textures;
+    std::unordered_map<std::string, std::shared_ptr<ShaderProgram>> m_ShaderPrograms;
 
     void load_texture(const std::string&, std::shared_ptr<Texture>&);
     void load_shader(const std::string&, std::shared_ptr<ShaderProgram>&);

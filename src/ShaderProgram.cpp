@@ -6,14 +6,14 @@
 #include "AttributeHelper.h"
 #include "ShaderProgram.h"
 
-void ShaderProgram::init_program()
+bool ShaderProgram::init_program()
 {
     m_ShaderProgram = glCreateProgram();
 
     if (m_ShaderProgram == 0)
     {
         std::cout << "Could not create shader program." << std::endl;
-        return;
+        return false;
     }
     //return;
     std::string vertex_text;
@@ -22,7 +22,7 @@ void ShaderProgram::init_program()
     if (!read_file(m_VertexFile, vertex_text) || !read_file(m_FragmentFile, frag_text))
     {
         std::cout << "Could not read one or more shader files." << std::endl;
-        return;
+        return false;
     }
 
     m_VertexObject = create_shader_object(vertex_text, GL_VERTEX_SHADER);
@@ -34,6 +34,8 @@ void ShaderProgram::init_program()
     
     init_attributes();
     link_shader_program(m_ShaderProgram);
+
+    return true;
 }
 
 void ShaderProgram::init_uniforms()
@@ -117,7 +119,7 @@ bool ShaderProgram::read_file(const std::string& filename, std::string& out)
     std::ifstream read(filename);
     if (!read)
     {
-        std::cout << "Could not open file " << filename << std::endl;
+        std::cout << "Could not open file " << filename << "." << std::endl;
         return false;
     }
 
@@ -129,14 +131,17 @@ bool ShaderProgram::read_file(const std::string& filename, std::string& out)
     return true;
 }
 
-void ShaderProgram::create(const char* vertex_shader_file, const char* frag_shader_file)
+bool ShaderProgram::create(const char* vertex_shader_file, const char* frag_shader_file)
 {
     m_VertexFile = vertex_shader_file;
     m_FragmentFile = frag_shader_file;
 
-    init_program();
+    if (!init_program())
+        return false;
+
     init_uniforms();
-    //init_attributes();
+
+    return true;
 }
 
 void ShaderProgram::bind() const
