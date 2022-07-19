@@ -4,19 +4,20 @@
 #include "RenderPacket.h"
 #include "UniformNode.h"
 
-void RenderingQueue::push_common_uniform(IUniformNode* uniform_node)
+UniformMatrix4fNode* RenderingQueue::create_uniform_matrix4f()
 {
-    if (m_CommonUniforms == nullptr)
-    {
-        m_CommonUniforms = uniform_node;
-        return;
-    }
+    auto ptr = std::make_shared<UniformMatrix4fNode>();
+    m_Uniforms.push_back(ptr);
 
-    auto node = m_CommonUniforms;
-    while (node->next != nullptr)
-        node = node->next;
+    return ptr.get();
+}
 
-    node->next = uniform_node;
+TextureNode* RenderingQueue::create_texture()
+{
+    auto ptr = std::make_shared<TextureNode>();
+    m_Textures.push_back(ptr);
+
+    return ptr.get();
 }
 
 void RenderingQueue::push_render_packet(const RenderPacket& packet)
@@ -27,7 +28,8 @@ void RenderingQueue::push_render_packet(const RenderPacket& packet)
 void RenderingQueue::clear()
 {
     m_Packets.clear();
-    m_CommonUniforms = nullptr;
+    m_Uniforms.clear();
+    m_Textures.clear();
 }
 
 void RenderingQueue::draw_all()
@@ -36,13 +38,10 @@ void RenderingQueue::draw_all()
     {
         packet.vbo->bind();
         packet.ibo->bind();
-        // set uniforms
-        // set textures
 
         set_textures(packet.textures);
 
         packet.shader->bind();
-        set_common_uniforms(packet.shader);
         set_uniforms(packet.uniforms, packet.shader);
 
         std::size_t primitive_size = get_topology_size(packet.topology);
@@ -54,16 +53,6 @@ void RenderingQueue::draw_all()
         glDrawElements(packet.topology, ib_count, GL_UNSIGNED_INT, (void*)ib_start);
 
         packet.vbo->unbind();
-    }
-}
-
-void RenderingQueue::set_common_uniforms(ShaderProgram* shader)
-{
-    auto node = m_CommonUniforms;
-    while (node != nullptr)
-    {
-        node->set_uniform(shader);
-        node = node->next;
     }
 }
 
@@ -86,7 +75,7 @@ void RenderingQueue::set_textures(TextureNode* first)
     std::size_t slot = 0;
     while (node != nullptr && slot <= 8)
     {
-        node->value.bind(slot);
+        node->value->bind(slot);
 
         slot++;
         node = node->next;

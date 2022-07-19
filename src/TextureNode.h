@@ -6,5 +6,5 @@ struct TextureNode
 {
     TextureNode* next = nullptr;
 
-    Texture value;
+    Texture* value;
 };

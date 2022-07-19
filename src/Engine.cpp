@@ -115,7 +115,7 @@ void Engine::render()
     glClearDepth(1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
-    m_VertexBuffer->bind();
+    /*m_VertexBuffer->bind();
     m_IndexBuffer->bind();
  
     m_Texture->bind(0);
@@ -127,7 +127,32 @@ void Engine::render()
  
     glDrawElements(GL_TRIANGLES, 58806, GL_UNSIGNED_INT, 0);
 
-    m_VertexBuffer->unbind();
+    m_VertexBuffer->unbind();*/
+
+    static RenderPacket packet;
+
+    auto vp_unif = m_RenderQueue.create_uniform_matrix4f();
+    vp_unif->next = nullptr;
+    vp_unif->uniform = Uniform::MVP;
+    vp_unif->value = m_Camera.get_vp();
+    packet.uniforms = vp_unif;
+
+    auto tex = m_RenderQueue.create_texture();
+    tex->next = nullptr;
+    tex->value = m_Texture.get();
+    packet.textures = tex;
+
+    packet.vbo = m_VertexBuffer.get();
+    packet.ibo = m_IndexBuffer.get();
+    packet.shader = m_Shaders.get();
+    packet.topology = GL_TRIANGLES;
+    packet.primitive_start = 0;
+    packet.primitive_end = 58806 / 3;
+
+    m_RenderQueue.push_render_packet(packet);
+ 
+    m_RenderQueue.draw_all();
+    m_RenderQueue.clear();
 }
 
 void Engine::key_callback(ApplicationBase* app, ApplicationBaseKey key, ApplicationBaseKeyAction action)
