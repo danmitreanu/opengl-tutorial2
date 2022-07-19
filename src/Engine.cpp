@@ -25,7 +25,7 @@ void Engine::init_buffer()
     m_VertexLayout->AddVertexAttribute(AttributeType::Position, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::Color, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::UV, 2);
-    
+
     struct Vertex
     {
         Vector3f pos;
