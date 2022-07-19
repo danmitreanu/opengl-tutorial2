@@ -16,6 +16,7 @@
 #include "ApplicationBaseKeys.h"
 
 #include "Movement.h"
+#include "RenderingQueue.h"
 
 class Engine : public ApplicationBase
 {
@@ -25,6 +26,8 @@ private:
     std::shared_ptr<VertexLayout> m_VertexLayout;
     std::shared_ptr<VertexBuffer> m_VertexBuffer;
     std::shared_ptr<IndexBuffer> m_IndexBuffer;
+
+    RenderingQueue m_RenderQueue;
 
     std::shared_ptr<ShaderProgram> m_Shaders;
 

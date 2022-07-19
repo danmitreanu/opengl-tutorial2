@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -10,6 +11,10 @@
 #include "VertexLayout.h"
 #include "ShaderProgram.h"
 #include "AttributeHelper.h"
+#include "RenderPacket.h"
+#include "RenderingQueue.h"
+#include "UniformNode.h"
+#include "TextureNode.h"
 
 void Engine::init_buffer()
 {
@@ -58,6 +63,7 @@ void Engine::init_buffer()
 
     m_VertexBuffer->create(vertices.data(), m_VertexLayout.get(), vertices.size());
     m_IndexBuffer->create(m_VertexBuffer.get(), indices.data(), indices.size());
+
 }
 
 void Engine::init_shader()
@@ -69,7 +75,7 @@ void Engine::init_camera()
 {
     m_Camera.change_framebuff_dimensions(get_width(), get_height());
 
-    Vector3f look_at{ 0.0, 0.0f, 0.0f };
+    Vector3f look_at{ 0.0f, -50.0f, 0.0f };
  
     m_Camera.set(look_at);
 }
@@ -96,11 +102,7 @@ void Engine::update(const float delta_seconds)
 {
     update_offset(delta_seconds);
 
-    Matrix4f translate;
-    Matrix4f rotate;
-    translate.InitTranslationTransform(Vector3f{ -200.0f, -50.0f, 0.0f });
-    rotate.InitRotateTransform(0, 0, 0);
-    m_ModelMatrix = translate * rotate;
+    m_ModelMatrix.InitRotateTransform(0.0f, 30.0f, 0.0f);
 
     m_Camera.update_camera_matrices();
 }
@@ -120,7 +122,8 @@ void Engine::render()
 
     m_Shaders->bind();
     //m_Shaders->set_uniform(Uniform::Texture0, 0);
-    m_Shaders->set_uniform(Uniform::MVP, m_Camera.get_mvp(m_ModelMatrix));
+    m_Shaders->set_uniform(Uniform::Model, m_ModelMatrix);
+    m_Shaders->set_uniform(Uniform::MVP, m_Camera.get_vp());
  
     glDrawElements(GL_TRIANGLES, 58806, GL_UNSIGNED_INT, 0);
 

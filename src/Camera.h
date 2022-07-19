@@ -8,7 +8,7 @@ private:
     Vector3f m_LookAt;
  
     float m_Pitch = 0.0f;
-    float m_Distance = 20.0f;
+    float m_Distance = 1.0f;
     float m_Yaw  = 0.0f;
 
     Matrix4f m_View;
@@ -16,11 +16,10 @@ private:
     PersProjInfo m_ProjInfo;
 
     Vector3f m_Up{ 0.0f, 0.0f, 1.0f }; // Z is up
- 
+
     Vector3f m_X { 1.0f, 0.0f, 0.0f };
     Vector3f m_Y { 0.0f, 1.0f, 0.0f };
     Vector3f m_Z { 0.0f, 0.0f, 1.0f };
-    
  
 public:
     Camera();
@@ -31,8 +30,8 @@ public:
 
     void set( const Vector3f& look_at);
 
-    const Matrix4f& get_view_matrix();
-    const Matrix4f& get_projection_matrix();
+    const Matrix4f& get_view_matrix() const;
+    const Matrix4f& get_projection_matrix() const;
     Matrix4f get_mvp(const Matrix4f& model) const;
     Matrix4f get_vp() const;
 

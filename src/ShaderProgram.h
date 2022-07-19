@@ -46,5 +46,7 @@ public:
     void set_uniform(Uniform, int);
     void set_uniform(Uniform, float);
     void set_uniform(Uniform, const Vector2f&);
+    void set_uniform(Uniform, const Vector3f&);
+    void set_uniform(Uniform, const Matrix3f&);
     void set_uniform(Uniform, const Matrix4f&);
 };

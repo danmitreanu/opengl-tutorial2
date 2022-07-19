@@ -18,19 +18,15 @@ void Camera::change_framebuff_dimensions(std::size_t width, std::size_t height)
 
 void Camera::set( const Vector3f& look_at)
 {
-    
     m_LookAt = look_at;
-
-    
-    
 }
 
-const Matrix4f& Camera::get_view_matrix()
+const Matrix4f& Camera::get_view_matrix() const
 {
     return m_View;
 }
 
-const Matrix4f& Camera::get_projection_matrix()
+const Matrix4f& Camera::get_projection_matrix() const
 {
     return m_Projection;
 }

@@ -167,20 +167,27 @@ GLint ShaderProgram::get_uniform_pos(Uniform uniform)
 
 void ShaderProgram::set_uniform(Uniform uniform, int value)
 {
-    this->ensure_bound();
     glUniform1i(m_Uniforms[(std::size_t)uniform], value);
 }
 
 void ShaderProgram::set_uniform(Uniform uniform, float value)
 {
-    this->ensure_bound();
     glUniform1f(m_Uniforms[(std::size_t)uniform], value);
 }
 
 void ShaderProgram::set_uniform(Uniform uniform, const Vector2f& vec2f)
 {
-    this->ensure_bound();
     glUniform2f(m_Uniforms[(std::size_t)uniform], vec2f.x, vec2f.y);
+}
+
+void ShaderProgram::set_uniform(Uniform uniform, const Vector3f& vec3f)
+{
+    glUniform3f(m_Uniforms[(std::size_t)uniform], vec3f.x, vec3f.y, vec3f.z);
+}
+
+void ShaderProgram::set_uniform(Uniform uniform, const Matrix3f& matrix3)
+{
+    glUniformMatrix3fv(m_Uniforms[(std::size_t)uniform], 1, GL_TRUE, &matrix3.m[0][0]);
 }
 
 void ShaderProgram::set_uniform(Uniform uniform, const Matrix4f& matrix4)

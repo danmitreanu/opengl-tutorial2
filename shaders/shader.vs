@@ -7,7 +7,6 @@ in vec2 UV;
 out vec3 VertexColor;
 out vec2 TexCoords;
 
-uniform mat4 Projection;
 uniform mat4 MVP;
 
 void main()
