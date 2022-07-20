@@ -32,6 +32,7 @@ private:
     std::shared_ptr<ShaderProgram> m_Shaders;
 
     std::shared_ptr<Texture> m_Texture;
+    std::shared_ptr<Texture> m_Texture2;
 
     Matrix4f m_ModelMatrix;
     Movement m_Movement;

@@ -13,9 +13,11 @@ private:
     std::vector<RenderPacket> m_Packets;
 
     Pool<UniformMatrix4fNode> m_Mat4UniformPool;
+    Pool<UniformIntegerNode> m_IntUniformPool;
+    
     Pool<TextureNode> m_TexturePool;
 
-    static void set_uniforms(IUniformNode*, ShaderProgram*);
+    static void set_uniforms(ShaderProgram * active_shader, IUniformNode* first, TextureNode* first_texture);
     static void set_textures(TextureNode*);
 
     static void draw_vbo(GLenum mode, std::size_t, std::size_t);
@@ -24,8 +26,10 @@ private:
 public:
     RenderingQueue() = default;
 
-    UniformMatrix4fNode* create_uniform_matrix4f();
-    TextureNode* create_texture();
+    IUniformNode* create_uniform(IUniformNode* prev, Uniform type, int value);
+    IUniformNode* create_uniform(IUniformNode* prev, Uniform type, const Matrix4f& value);
+
+    TextureNode* create_texture(TextureNode* prv, Texture * value, Uniform type);
 
     void push_render_packet(const RenderPacket&);
 

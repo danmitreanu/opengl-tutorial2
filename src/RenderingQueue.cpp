@@ -7,14 +7,36 @@
 #include "RenderPacket.h"
 #include "UniformNode.h"
 
-UniformMatrix4fNode* RenderingQueue::create_uniform_matrix4f()
+IUniformNode* RenderingQueue::create_uniform(IUniformNode* prev, Uniform type, const Matrix4f& value)
 {
-    return m_Mat4UniformPool.alloc();
+    auto* n = m_Mat4UniformPool.alloc();
+    n->uniform = type;
+    n->value = value;
+    n->next = prev;
+    return n;
+}
+IUniformNode* RenderingQueue::create_uniform(IUniformNode* prev, Uniform type, int value)
+{
+    auto* n = m_IntUniformPool.alloc();
+    n->uniform = type;
+    n->value = value;
+    n->next = prev;
+    return n;
 }
 
-TextureNode* RenderingQueue::create_texture()
+TextureNode* RenderingQueue::create_texture(TextureNode* prv, Texture * value, Uniform type)
 {
-    return m_TexturePool.alloc();
+    auto* n = m_TexturePool.alloc();
+    n->value = value;
+    n->target = type;
+
+    if (prv == nullptr)
+        n->hash = value->get_hash();
+    else
+        n->hash = value->get_hash() ^ prv->hash;
+
+    n->next = prv;
+    return n;
 }
 
 void RenderingQueue::push_render_packet(const RenderPacket& packet)
@@ -26,6 +48,7 @@ void RenderingQueue::clear()
 {
     m_Packets.clear();
     m_Mat4UniformPool.clear();
+    m_IntUniformPool.clear();
     m_TexturePool.clear();
 }
 
@@ -35,6 +58,7 @@ void RenderingQueue::draw_all()
 
     VertexBuffer* current_vbo = nullptr;
     IndexBuffer* current_ibo = nullptr;
+    ShaderProgram* active_shader = nullptr;
     uint64_t bound_textures_hash = 0;
 
     for (const auto& packet : m_Packets)
@@ -51,8 +75,13 @@ void RenderingQueue::draw_all()
             set_textures(packet.textures);
         }
 
-        packet.shader->bind();
-        set_uniforms(packet.uniforms, packet.shader);
+        if (active_shader != packet.shader)
+        {
+            active_shader = packet.shader;
+            active_shader->bind();
+        }
+
+        set_uniforms(active_shader, packet.uniforms, packet.textures);
 
         if (packet.ibo != nullptr)
         {
@@ -68,7 +97,6 @@ void RenderingQueue::draw_all()
         {
             draw_vbo(packet.topology, packet.primitive_start, packet.primitive_end);
         }
-
     }
 
     current_vbo->unbind();
@@ -100,15 +128,25 @@ void RenderingQueue::draw_ibo(
     glDrawElements(mode, count, GL_UNSIGNED_INT, (void*)start);
 }
 
-void RenderingQueue::set_uniforms(IUniformNode* first, ShaderProgram* shader)
+void RenderingQueue::set_uniforms(ShaderProgram* active_shader, IUniformNode* first, TextureNode* first_texture)
 {
-    auto node = first;
-
-    while (node != nullptr)
     {
-        node->set_uniform(shader);
+        auto node = first;
+        while (node != nullptr)
+        {
+            node->set_uniform(active_shader);
 
-        node = node->next;
+            node = node->next;
+        }
+    }
+    {
+        auto node = first_texture;
+        std::size_t slot = 0;
+        while (node != nullptr && slot <= 8)
+        {
+            active_shader->set_uniform(node->target, int(node->slot));
+            node = node->next;
+        }
     }
 }
 
@@ -116,11 +154,11 @@ void RenderingQueue::set_textures(TextureNode* first)
 {
     auto node = first;
 
-    std::size_t slot = 0;
+    uint32_t slot = 0;
     while (node != nullptr && slot <= 8)
     {
         node->value->bind(slot);
-
+        node->slot = slot;
         slot++;
         node = node->next;
     }

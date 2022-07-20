@@ -28,6 +28,6 @@ public:
         if (m_Index == m_Buffer.size())
             return nullptr;
 
-        return &(*m_Buffer.begin()) + m_Index++;
+        return &(m_Buffer[m_Index++]);
     }
 };

@@ -3,6 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <cstdlib>
+#include <cmath>
 
 #include "OpenGL.h"
 
@@ -35,13 +37,13 @@ void Engine::init_buffer()
  
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
- 
+
     for (std::size_t y = 0; y < 100; y++)
     {
         for (std::size_t x = 0; x < 100; x++)
         {
             Vertex v;
-            v.pos = Vector3f(float(x), float(y), -100.0f);
+            v.pos = Vector3f(float(x), float(y), 0.2 * (rand() % 50) - 100.0f);
             v.c = Vector3f(1.0f, 0.0f, 0.0f);
             v.uv = Vector2f(float(x) / 100.0f, float(y) / 100.0f);
             vertices.push_back(v);
@@ -83,6 +85,7 @@ void Engine::init_camera()
 void Engine::init_texture()
 {
     m_Texture = get_resource_manager().get_texture("mc.jpeg");
+    m_Texture2 = get_resource_manager().get_texture("grass.jpeg");
 }
 
 bool Engine::initialize(const char* window_name, std::size_t width, std::size_t height)
@@ -114,7 +117,7 @@ void Engine::render()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearDepth(1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
- 
+    
     /*m_VertexBuffer->bind();
     m_IndexBuffer->bind();
  
@@ -133,16 +136,12 @@ void Engine::render()
     Matrix4f model_matrix;
     model_matrix.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, 50.0f });
 
-    auto vp_unif = m_RenderQueue.create_uniform_matrix4f();
-    vp_unif->next = nullptr;
-    vp_unif->uniform = Uniform::MVP;
-    vp_unif->value = m_Camera.get_mvp(model_matrix);
-    packet.uniforms = vp_unif;
+    auto* u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model_matrix));
+    
+    auto* t1 = m_RenderQueue.create_texture(nullptr, m_Texture.get(), Uniform::Texture0);
 
-    auto tex = m_RenderQueue.create_texture();
-    tex->next = nullptr;
-    tex->set_value(m_Texture.get());
-    packet.textures = tex;
+    packet.textures = t1;
+    packet.uniforms = u;
 
     packet.vbo = m_VertexBuffer.get();
     packet.ibo = m_IndexBuffer.get();
@@ -155,16 +154,13 @@ void Engine::render()
     Matrix4f model_matrix2;
     model_matrix2.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, -50.0f });
 
-    auto vp_unif2 = m_RenderQueue.create_uniform_matrix4f();
-    vp_unif2->next = nullptr;
-    vp_unif2->uniform = Uniform::MVP;
-    vp_unif2->value = m_Camera.get_mvp(model_matrix2);
-    packet2.uniforms = vp_unif2;
-
-    auto tex2 = m_RenderQueue.create_texture();
-    tex2->next = nullptr;
-    tex2->set_value(m_Texture.get());
-    packet2.textures = tex2;
+    
+    
+    u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model_matrix2));
+    auto* t2 = m_RenderQueue.create_texture(nullptr, m_Texture2.get(), Uniform::Texture0);
+   
+    packet2.uniforms = u;
+    packet2.textures = t2;
 
     packet2.vbo = m_VertexBuffer.get();
     packet2.ibo = m_IndexBuffer.get();
