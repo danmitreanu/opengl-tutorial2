@@ -14,7 +14,7 @@ private:
 
     Pool<UniformMatrix4fNode> m_Mat4UniformPool;
     Pool<UniformIntegerNode> m_IntUniformPool;
-    
+
     Pool<TextureNode> m_TexturePool;
 
     static void set_uniforms(ShaderProgram * active_shader, IUniformNode* first, TextureNode* first_texture);
