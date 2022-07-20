@@ -6,16 +6,12 @@
 
 UniformMatrix4fNode* RenderingQueue::create_uniform_matrix4f()
 {
-    UniformMatrix4fNode mat4;
-
-    return (UniformMatrix4fNode*)m_Mat4UniformPool.add(mat4);
+    return m_Mat4UniformPool.alloc();
 }
 
 TextureNode* RenderingQueue::create_texture()
 {
-    TextureNode tex;
-
-    return m_TexturePool.add(tex);
+    return m_TexturePool.alloc();
 }
 
 void RenderingQueue::push_render_packet(const RenderPacket& packet)
@@ -26,8 +22,8 @@ void RenderingQueue::push_render_packet(const RenderPacket& packet)
 void RenderingQueue::clear()
 {
     m_Packets.clear();
-    m_Mat4UniformPool.reset();
-    m_TexturePool.reset();
+    m_Mat4UniformPool.clear();
+    m_TexturePool.clear();
 }
 
 void RenderingQueue::draw_all()
