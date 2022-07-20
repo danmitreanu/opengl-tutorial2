@@ -19,6 +19,8 @@ struct RenderPacket
     TextureNode* textures = nullptr;
 };
 
+bool operator<(RenderPacket const&, RenderPacket const&);
+
 static std::size_t get_topology_size(GLenum topology)
 {
     switch (topology)

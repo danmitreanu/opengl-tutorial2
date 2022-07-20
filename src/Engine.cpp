@@ -129,17 +129,19 @@ void Engine::render()
 
     m_VertexBuffer->unbind();*/
 
-    static RenderPacket packet;
+    RenderPacket packet;
+    Matrix4f model_matrix;
+    model_matrix.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, 50.0f });
 
     auto vp_unif = m_RenderQueue.create_uniform_matrix4f();
     vp_unif->next = nullptr;
     vp_unif->uniform = Uniform::MVP;
-    vp_unif->value = m_Camera.get_vp();
+    vp_unif->value = m_Camera.get_mvp(model_matrix);
     packet.uniforms = vp_unif;
 
     auto tex = m_RenderQueue.create_texture();
     tex->next = nullptr;
-    tex->value = m_Texture.get();
+    tex->set_value(m_Texture.get());
     packet.textures = tex;
 
     packet.vbo = m_VertexBuffer.get();
@@ -149,7 +151,30 @@ void Engine::render()
     packet.primitive_start = 0;
     packet.primitive_end = 58806 / 3;
 
+    RenderPacket packet2;
+    Matrix4f model_matrix2;
+    model_matrix2.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, -50.0f });
+
+    auto vp_unif2 = m_RenderQueue.create_uniform_matrix4f();
+    vp_unif2->next = nullptr;
+    vp_unif2->uniform = Uniform::MVP;
+    vp_unif2->value = m_Camera.get_mvp(model_matrix2);
+    packet2.uniforms = vp_unif2;
+
+    auto tex2 = m_RenderQueue.create_texture();
+    tex2->next = nullptr;
+    tex2->set_value(m_Texture.get());
+    packet2.textures = tex2;
+
+    packet2.vbo = m_VertexBuffer.get();
+    packet2.ibo = m_IndexBuffer.get();
+    packet2.shader = m_Shaders.get();
+    packet2.topology = GL_TRIANGLES;
+    packet2.primitive_start = 0;
+    packet2.primitive_end = 58806 / 3;
+
     m_RenderQueue.push_render_packet(packet);
+    m_RenderQueue.push_render_packet(packet2);
  
     m_RenderQueue.draw_all();
     m_RenderQueue.clear();
@@ -170,6 +195,7 @@ void Engine::framebuffer_callback(ApplicationBase* app, std::size_t width, std::
 {
     Engine* handler = reinterpret_cast<Engine*>(app);
     handler->m_Camera.change_framebuff_dimensions(width, height);
+    handler->m_Camera.update_camera_matrices();
 }
 
 void Engine::on_key(ApplicationBaseKey key, bool pressed)

@@ -4,6 +4,8 @@
 #include "stb_image.h"
 #include "ShaderProgram.h"
 
+std::hash<std::string> Texture::m_HashObj;
+
 Texture::Texture()
 {
     glGenTextures(1, &m_Texture);
@@ -18,9 +20,8 @@ bool Texture::load(const char* filename)
 {
     glBindTexture(GL_TEXTURE_2D, m_Texture);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);    // set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -31,6 +32,8 @@ bool Texture::load(const char* filename)
         return false;
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+    m_Hash = m_HashObj(filename);
 
     return true;
 }

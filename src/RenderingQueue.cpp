@@ -1,6 +1,9 @@
 #include "RenderingQueue.h"
 
 #include <vector>
+#include <algorithm>
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 #include "RenderPacket.h"
 #include "UniformNode.h"
 
@@ -28,26 +31,73 @@ void RenderingQueue::clear()
 
 void RenderingQueue::draw_all()
 {
+    std::sort(m_Packets.begin(), m_Packets.end());
+
+    VertexBuffer* current_vbo = nullptr;
+    IndexBuffer* current_ibo = nullptr;
+    uint64_t bound_textures_hash = 0;
+
     for (const auto& packet : m_Packets)
     {
-        packet.vbo->bind();
-        packet.ibo->bind();
+        if (current_vbo != packet.vbo)
+        {
+            current_vbo = packet.vbo;
+            current_vbo->bind();
+        }
 
-        set_textures(packet.textures);
+        if (bound_textures_hash != packet.textures->hash)
+        {
+            bound_textures_hash = packet.textures->hash;
+            set_textures(packet.textures);
+        }
 
         packet.shader->bind();
         set_uniforms(packet.uniforms, packet.shader);
 
-        std::size_t primitive_size = get_topology_size(packet.topology);
-        std::size_t primitive_count = packet.primitive_end - packet.primitive_start;
+        if (packet.ibo != nullptr)
+        {
+            if (current_ibo != packet.ibo)
+            {
+                current_ibo = packet.ibo;
+                current_ibo->bind();
+            }
 
-        std::size_t ib_start = primitive_size * packet.primitive_start;
-        std::size_t ib_count = primitive_size * primitive_count;
+            draw_ibo(packet.topology, packet.primitive_start, packet.primitive_end);
+        }
+        else
+        {
+            draw_vbo(packet.topology, packet.primitive_start, packet.primitive_end);
+        }
 
-        glDrawElements(packet.topology, ib_count, GL_UNSIGNED_INT, (void*)ib_start);
-
-        packet.vbo->unbind();
     }
+
+    current_vbo->unbind();
+}
+
+void RenderingQueue::draw_vbo(
+    GLenum mode,
+    std::size_t primitive_start,
+    std::size_t primitive_end)
+{
+    std::size_t primitive_size = get_topology_size(mode);
+    std::size_t primitive_count = primitive_end - primitive_start;
+    std::size_t start = primitive_size * primitive_start;
+    std::size_t count = primitive_size * primitive_count;
+
+    glDrawArrays(mode, start, count);
+}
+
+void RenderingQueue::draw_ibo(
+    GLenum mode,
+    std::size_t primitive_start,
+    std::size_t primitive_end)
+{
+    std::size_t primitive_size = get_topology_size(mode);
+    std::size_t primitive_count = primitive_end - primitive_start;
+    std::size_t start = primitive_size * primitive_start;
+    std::size_t count = primitive_size * primitive_count;
+
+    glDrawElements(mode, count, GL_UNSIGNED_INT, (void*)start);
 }
 
 void RenderingQueue::set_uniforms(IUniformNode* first, ShaderProgram* shader)

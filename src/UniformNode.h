@@ -15,35 +15,35 @@ struct IUniformNode
 struct UniformIntegerNode : public IUniformNode
 {
     int value;
-    void set_uniform(ShaderProgram*);
+    void set_uniform(ShaderProgram*) override;
 };
 
 struct UniformFloatNode : public IUniformNode
 {
     float value;
-    void set_uniform(ShaderProgram*);
+    void set_uniform(ShaderProgram*) override;
 };
 
 struct UniformVector2fNode : public IUniformNode
 {
     Vector2f value;
-    void set_uniform(ShaderProgram*);
+    void set_uniform(ShaderProgram*) override;
 };
 
 struct UniformVector3fNode : public IUniformNode
 {
     Vector3f value;
-    void set_uniform(ShaderProgram*);
+    void set_uniform(ShaderProgram*) override;
 };
 
 struct UniformMatrix3fNode : public IUniformNode
 {
     Matrix3f value;
-    void set_uniform(ShaderProgram*);
+    void set_uniform(ShaderProgram*) override;
 };
 
 struct UniformMatrix4fNode : public IUniformNode
 {
     Matrix4f value;
-    void set_uniform(ShaderProgram*);
+    void set_uniform(ShaderProgram*) override;
 };

@@ -18,6 +18,9 @@ private:
     static void set_uniforms(IUniformNode*, ShaderProgram*);
     static void set_textures(TextureNode*);
 
+    static void draw_vbo(GLenum mode, std::size_t, std::size_t);
+    static void draw_ibo(GLenum mode, std::size_t, std::size_t);
+
 public:
     RenderingQueue() = default;
 
