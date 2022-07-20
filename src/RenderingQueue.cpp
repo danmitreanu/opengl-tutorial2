@@ -6,18 +6,16 @@
 
 UniformMatrix4fNode* RenderingQueue::create_uniform_matrix4f()
 {
-    auto ptr = std::make_shared<UniformMatrix4fNode>();
-    m_Uniforms.push_back(ptr);
+    UniformMatrix4fNode mat4;
 
-    return ptr.get();
+    return (UniformMatrix4fNode*)m_Mat4UniformPool.add(mat4);
 }
 
 TextureNode* RenderingQueue::create_texture()
 {
-    auto ptr = std::make_shared<TextureNode>();
-    m_Textures.push_back(ptr);
+    TextureNode tex;
 
-    return ptr.get();
+    return m_TexturePool.add(tex);
 }
 
 void RenderingQueue::push_render_packet(const RenderPacket& packet)
@@ -28,8 +26,8 @@ void RenderingQueue::push_render_packet(const RenderPacket& packet)
 void RenderingQueue::clear()
 {
     m_Packets.clear();
-    m_Uniforms.clear();
-    m_Textures.clear();
+    m_Mat4UniformPool.reset();
+    m_TexturePool.reset();
 }
 
 void RenderingQueue::draw_all()

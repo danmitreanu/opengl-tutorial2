@@ -1,5 +1,8 @@
 #include "Pool.h"
 
+template class Pool<UniformNode>;
+template class Pool<TextureNode>;
+
 template <typename T>
 Pool<T>::Pool(std::size_t initial_size)
 {
@@ -38,15 +41,12 @@ void Pool<T>::extend(std::size_t magnitude)
 }
 
 template <typename T>
-T* Pool<T>::allocate(std::size_t count)
+T* Pool<T>::add(T& item)
 {
-    std::size_t needed_size = m_Index + count;
-
+    std::size_t needed_size = m_Index + 1;
     if (needed_size >= m_Reserved)
-    {
-        std::size_t magnitudes = needed_size / m_SizeUnit;
-        this->extend(magnitudes);
-    }
+        extend();
 
+    m_Array[m_Index] = item;
     return (m_Array + m_Index++);
 }

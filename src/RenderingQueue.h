@@ -12,8 +12,8 @@ class RenderingQueue
 private:
     std::vector<RenderPacket> m_Packets;
 
-    std::vector<std::shared_ptr<IUniformNode>> m_Uniforms;
-    std::vector<std::shared_ptr<TextureNode>> m_Textures;
+    Pool<UniformMatrix4fNode> m_Mat4UniformPool;
+    Pool<TextureNode> m_TexturePool;
 
     static void set_uniforms(IUniformNode*, ShaderProgram*);
     static void set_textures(TextureNode*);
