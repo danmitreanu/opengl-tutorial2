@@ -35,7 +35,7 @@ void Terrain::generate()
     std::size_t height = m_HeightMap->get_height();
     std::size_t width = m_HeightMap->get_width();
     float size_multiplier = 2.0f;
-    std::size_t tex_size = 50;
+    std::size_t tex_size = 20;
 
     for (std::size_t y = 0; y < height; y++)
     for (std::size_t x = 0; x < width; x++)
