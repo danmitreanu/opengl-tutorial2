@@ -11,8 +11,8 @@ Terrain::Terrain()
     m_Ibo = std::make_shared<IndexBuffer>();
 
     m_VertexLayout->AddVertexAttribute(AttributeType::Position, 3);
-    m_VertexLayout->AddVertexAttribute(AttributeType::Color, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::UV, 2);
+    m_VertexLayout->AddVertexAttribute(AttributeType::Height, 1);
 }
 
 void Terrain::load_heightmap(std::shared_ptr<HeightMap> height_map)
@@ -25,8 +25,8 @@ void Terrain::generate()
     struct Vertex
     {
         Vector3f pos;
-        Vector3f color;
         Vector2f uv;
+        float height;
     };
 
     std::vector<Vertex> vertices;
@@ -40,12 +40,12 @@ void Terrain::generate()
     for (std::size_t y = 0; y < height; y++)
     for (std::size_t x = 0; x < width; x++)
     {
-        float height = m_HeightMap->get_height(x, y);
+        float height = m_HeightMap->get_height(x, y) * 1000.0f - 800.0f;
 
         Vertex v;
-        v.pos = Vector3f{ x * size_multiplier, y * size_multiplier, m_HeightMap->get_height(x, y) * 1000.0f - 800.0f };
-        v.color = Vector3f{ 1.0f, 0.0f, 0.0f };
+        v.pos = Vector3f{ x * size_multiplier, y * size_multiplier, height };
         v.uv = Vector2f{ float(x % tex_size) / tex_size, float(y % tex_size) / tex_size };
+        v.height = height;
         vertices.push_back(v);
     }
 

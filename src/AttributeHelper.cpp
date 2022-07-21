@@ -16,7 +16,8 @@ AttributeData::AttributeData()
     {{
         { "Position", AttributeType::Position },
         { "Color", AttributeType::Color },
-        { "UV", AttributeType::UV }
+        { "UV", AttributeType::UV },
+        { "Height", AttributeType::Height }
     }};
 }
 

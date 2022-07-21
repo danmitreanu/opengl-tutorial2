@@ -7,6 +7,7 @@ enum class AttributeType
     Position = 0,
     Color,
     UV,
+    Height,
 
     Count
 };

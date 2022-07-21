@@ -187,6 +187,7 @@ void Engine::render()
     model.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, -50.0f });
     auto* u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model));
     auto* t = m_RenderQueue.create_texture(nullptr, m_Texture.get(), Uniform::Texture0);
+    t = m_RenderQueue.create_texture(t, m_Texture2.get(), Uniform::Texture1);
 
     auto packet = m_Terrain->get_packet(m_Shaders.get(), t, u);
 

@@ -3,9 +3,11 @@
 in vec3 Position;
 in vec3 Color;
 in vec2 UV;
+in float Height;
 
 out vec3 VertexColor;
 out vec2 TexCoords;
+out float FragHeight;
 
 uniform mat4 MVP;
 
@@ -17,4 +19,5 @@ void main()
     gl_Position = MVP * vec4(Position, 1.0);
     VertexColor = Color;
     TexCoords = UV;
+    FragHeight = Height;
 }
