@@ -11,14 +11,12 @@ uniform sampler2D Texture1;
 
 void main()
 {
-    //FragColor = vec4(VertexColor.x, VertexColor.y, VertexColor.z, 0.0);
-    /*if (FragHeight > -550)
-        FragColor = vec4(texture(Texture0, TexCoords).rgb, 1.0);
-    else
-        FragColor = vec4(texture(Texture1, TexCoords).rgb, 1.0);*/
+    vec3 dirt = texture(Texture0, TexCoords).rgb;
+    vec3 grass = texture(Texture1, TexCoords).rgb;
 
-    if (FragHeight < -700)
-        FragColor = vec4(texture(Texture1, TexCoords).rgb, 1.0);
-    else
-        FragColor = vec4(texture(Texture0, TexCoords).rgb, 1.0);
+    float a = 2.5 * FragHeight;
+    if (a > 1.0)
+        a = 1.0;
+
+    FragColor = vec4(mix(grass, dirt, a), 1.0);
 }

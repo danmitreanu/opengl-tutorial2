@@ -32,6 +32,6 @@ void HeightMap::read_heights(unsigned char* data, const short bytes_per_pixel)
 
 float HeightMap::get_height(std::size_t x, std::size_t y)
 {
-    assert(x < m_TexWidth && y < m_TexHeight);
+    //assert(x < m_TexWidth && y < m_TexHeight);
     return m_Height[x][y];
 }

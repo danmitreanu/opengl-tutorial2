@@ -42,7 +42,7 @@ bool Texture::load(const char* filename)
 
 void Texture::bind(int slot)
 {
-    assert(slot >= 0 && slot <= 8);
+    //assert(slot >= 0 && slot <= 8);
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, m_Texture);
 }
