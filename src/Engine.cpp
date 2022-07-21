@@ -43,7 +43,7 @@ void Engine::init_buffer()
         for (std::size_t x = 0; x < 100; x++)
         {
             Vertex v;
-            v.pos = Vector3f(float(x), float(y), 0.2 * (rand() % 50) - 100.0f);
+            v.pos = Vector3f(float(x) * 3, float(y) * 3, 0.2 * (rand() % 50) - 100.0f);
             v.c = Vector3f(1.0f, 0.0f, 0.0f);
             v.uv = Vector2f(float(x) / 100.0f, float(y) / 100.0f);
             vertices.push_back(v);
@@ -114,7 +114,7 @@ void Engine::render()
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.4f, 0.6f, 0.7f, 0.0f);
     glClearDepth(1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -138,7 +138,7 @@ void Engine::render()
 
     auto* u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model_matrix));
     
-    auto* t1 = m_RenderQueue.create_texture(nullptr, m_Texture.get(), Uniform::Texture0);
+    auto* t1 = m_RenderQueue.create_texture(nullptr, m_Texture2.get(), Uniform::Texture0);
 
     packet.textures = t1;
     packet.uniforms = u;
@@ -154,11 +154,9 @@ void Engine::render()
     Matrix4f model_matrix2;
     model_matrix2.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, -50.0f });
 
-    
-    
     u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model_matrix2));
-    auto* t2 = m_RenderQueue.create_texture(nullptr, m_Texture2.get(), Uniform::Texture0);
-   
+    auto* t2 = m_RenderQueue.create_texture(nullptr, m_Texture.get(), Uniform::Texture0);
+
     packet2.uniforms = u;
     packet2.textures = t2;
 

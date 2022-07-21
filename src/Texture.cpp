@@ -1,7 +1,7 @@
 #include "Texture.h"
 
 #include "OpenGL.h"
-#include "stb_image.h"
+#include "StbWrapper.h"
 #include "ShaderProgram.h"
 
 std::hash<std::string> Texture::m_HashObj;
@@ -26,12 +26,14 @@ bool Texture::load(const char* filename)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int width, height, channels;
-    unsigned char* data = stbi_load(filename, &width, &height, &channels, 3);
+    unsigned char* data = StbWrapper::stbi_wrapper_load(filename, &width, &height, &channels, 3);
 
     if (!data || channels != 3)
         return false;
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+    StbWrapper::stbi_wrapper_free(data);
 
     m_Hash = m_HashObj(filename);
 
