@@ -26,7 +26,7 @@ void HeightMap::read_heights(unsigned char* data, const short bytes_per_pixel)
         const unsigned char* offset = data + (i + m_TexWidth * j) * bytes_per_pixel;
         unsigned char red = offset[0];
 
-        m_Height[i][j] = 1.0f - red / 255.0f; // white is full height
+        m_Height[i][j] = red / 255.0f;
     }
 }
 

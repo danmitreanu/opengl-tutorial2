@@ -18,7 +18,8 @@ UniformData::UniformData()
 		{ "View", Uniform::View },
 		{ "Projection", Uniform::Projection },
 		{ "MVP", Uniform::MVP },
-		{ "Texture0", Uniform::Texture0 }
+		{ "Texture0", Uniform::Texture0 },
+		{ "Texture1", Uniform::Texture1 }
 	}};
 }
 

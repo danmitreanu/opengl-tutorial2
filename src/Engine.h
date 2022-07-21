@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "Math3D.h"
 #include "Texture.h"
+#include "Terrain.h"
 #include "ResourceManager.h"
 #include "ApplicationBase.h"
 #include "ApplicationBaseKeys.h"
@@ -33,6 +34,8 @@ private:
 
     std::shared_ptr<Texture> m_Texture;
     std::shared_ptr<Texture> m_Texture2;
+    std::shared_ptr<HeightMap> m_HeightMap;
+    std::shared_ptr<Terrain> m_Terrain;
 
     Matrix4f m_ModelMatrix;
     Movement m_Movement;
@@ -42,6 +45,7 @@ private:
     void init_shader();
     void init_camera();
     void init_texture();
+    void init_terrain();
 
     void key_callback(ApplicationBase*, ApplicationBaseKey, ApplicationBaseKeyAction);
     void framebuffer_callback(ApplicationBase*, std::size_t, std::size_t);

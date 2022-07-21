@@ -12,6 +12,7 @@ enum class Uniform
     Projection,
     MVP,
     Texture0,
+    Texture1,
 
     Count
 };

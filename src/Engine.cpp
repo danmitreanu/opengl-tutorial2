@@ -17,6 +17,8 @@
 #include "RenderingQueue.h"
 #include "UniformNode.h"
 #include "TextureNode.h"
+#include "Terrain.h"
+#include "HeightMap.h"
 
 void Engine::init_buffer()
 {
@@ -88,6 +90,16 @@ void Engine::init_texture()
     m_Texture2 = get_resource_manager().get_texture("grass.jpeg");
 }
 
+void Engine::init_terrain()
+{
+    m_HeightMap = std::make_shared<HeightMap>();
+    m_HeightMap->load("/Users/danm3/opengl/cmake/resources/height_map.jpeg");
+
+    m_Terrain = std::make_shared<Terrain>();
+    m_Terrain->load_heightmap(m_HeightMap);
+    m_Terrain->generate();
+}
+
 bool Engine::initialize(const char* window_name, std::size_t width, std::size_t height)
 {
     if (!init_window(window_name, width, height))
@@ -97,6 +109,7 @@ bool Engine::initialize(const char* window_name, std::size_t width, std::size_t 
     init_shader();
     init_camera();
     init_texture();
+    init_terrain();
 
     return true;
 }
@@ -132,7 +145,7 @@ void Engine::render()
 
     m_VertexBuffer->unbind();*/
 
-    RenderPacket packet;
+    /*RenderPacket packet;
     Matrix4f model_matrix;
     model_matrix.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, 50.0f });
 
@@ -168,7 +181,16 @@ void Engine::render()
     packet2.primitive_end = 58806 / 3;
 
     m_RenderQueue.push_render_packet(packet);
-    m_RenderQueue.push_render_packet(packet2);
+    m_RenderQueue.push_render_packet(packet2);*/
+
+    Matrix4f model;
+    model.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, -50.0f });
+    auto* u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model));
+    auto* t = m_RenderQueue.create_texture(nullptr, m_Texture.get(), Uniform::Texture0);
+
+    auto packet = m_Terrain->get_packet(m_Shaders.get(), t, u);
+
+    m_RenderQueue.push_render_packet(packet);
  
     m_RenderQueue.draw_all();
     m_RenderQueue.clear();

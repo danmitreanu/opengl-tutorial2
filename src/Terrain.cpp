@@ -34,15 +34,18 @@ void Terrain::generate()
 
     std::size_t height = m_HeightMap->get_height();
     std::size_t width = m_HeightMap->get_width();
-    float size_multiplier = 5.0f;
+    float size_multiplier = 2.0f;
+    std::size_t tex_size = 50;
 
     for (std::size_t y = 0; y < height; y++)
     for (std::size_t x = 0; x < width; x++)
     {
+        float height = m_HeightMap->get_height(x, y);
+
         Vertex v;
-        v.pos = Vector3f{ x * size_multiplier, y * size_multiplier, m_HeightMap->get_height(x, y) };
+        v.pos = Vector3f{ x * size_multiplier, y * size_multiplier, m_HeightMap->get_height(x, y) * 1000.0f - 800.0f };
         v.color = Vector3f{ 1.0f, 0.0f, 0.0f };
-        v.uv = Vector2f{ x / 5.0f / width, y / 5.0f / height };
+        v.uv = Vector2f{ float(x % tex_size) / tex_size, float(y % tex_size) / tex_size };
         vertices.push_back(v);
     }
 
