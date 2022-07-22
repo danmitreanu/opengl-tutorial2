@@ -8,15 +8,25 @@ in float FragHeight;
 
 uniform sampler2D Texture0;
 uniform sampler2D Texture1;
+uniform sampler2D Texture2;
+uniform sampler2D Texture3;
 
 void main()
 {
-    vec3 dirt = texture(Texture0, TexCoords).rgb;
-    vec3 grass = texture(Texture1, TexCoords).rgb;
+    vec4 grass = texture(Texture0, TexCoords).rgba;
+    vec4 rock1 = texture(Texture1, TexCoords).rgba;
+    vec4 rock2 = texture(Texture2, TexCoords).rgba;
+    vec4 snow = texture(Texture3, TexCoords).rgba;
 
-    float a = 2.5 * FragHeight;
-    if (a > 1.0)
-        a = 1.0;
+    rock1 = mix(rock1, vec4(0.0, 0.5, 0.0, 1.0), 0.5);
+    grass = mix(grass, vec4(0.0, 1.0, 0.0, 1.0), 0.2);
 
-    FragColor = vec4(mix(grass, dirt, a), 1.0);
+    float a = FragHeight;
+    vec4 black = vec4(0.0, 0.0, 0.0, 0.3);
+    vec4 tex = mix(black, grass, log(a + 1) + 0.3);
+    tex = mix(tex, rock1, pow(a, 8.0));
+    tex = mix(tex, rock2, a);
+    tex = mix(tex, snow, pow(a, 4.0));
+
+    FragColor = vec4(tex);
 }

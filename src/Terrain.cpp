@@ -3,6 +3,8 @@
 #include "VertexLayout.h"
 #include "RenderPacket.h"
 #include "Math3D.h"
+#include "ResourceManager.h"
+#include "RenderingQueue.h"
 
 Terrain::Terrain()
 {
@@ -13,6 +15,14 @@ Terrain::Terrain()
     m_VertexLayout->AddVertexAttribute(AttributeType::Position, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::UV, 2);
     m_VertexLayout->AddVertexAttribute(AttributeType::Height, 1);
+}
+
+void Terrain::init_textures(ResourceManager* resource_manager)
+{
+    m_GrassTex = resource_manager->get_texture("high_grass.jpeg");
+    m_Rock1Tex = resource_manager->get_texture("high_rock1.jpeg");
+    m_Rock2Tex = resource_manager->get_texture("high_rock2.jpeg");
+    m_SnowTex = resource_manager->get_texture("high_snow.jpeg");
 }
 
 void Terrain::load_heightmap(std::shared_ptr<HeightMap> height_map)
@@ -64,8 +74,16 @@ void Terrain::generate()
     m_Ibo->create(m_Vbo.get(), indices.data(), indices.size());
 }
 
-RenderPacket Terrain::get_packet(ShaderProgram* shader, TextureNode* textures, IUniformNode* uniforms)
+RenderPacket Terrain::get_packet(
+    RenderingQueue* render_queue,
+    ShaderProgram* shader,
+    IUniformNode* uniforms)
 {
+    auto* tex = render_queue->create_texture(nullptr, m_GrassTex.get(), Uniform::Texture0);
+    tex = render_queue->create_texture(tex, m_Rock1Tex.get(), Uniform::Texture1);
+    tex = render_queue->create_texture(tex, m_Rock2Tex.get(), Uniform::Texture2);
+    tex = render_queue->create_texture(tex, m_SnowTex.get(), Uniform::Texture3);
+
     RenderPacket packet;
     packet.vbo = m_Vbo.get();
     packet.ibo = m_Ibo.get();
@@ -73,7 +91,7 @@ RenderPacket Terrain::get_packet(ShaderProgram* shader, TextureNode* textures, I
     packet.topology = GL_TRIANGLES;
     packet.primitive_start = 0;
     packet.primitive_end = m_Ibo->get_count() / get_topology_size(GL_TRIANGLES);
-    packet.textures = textures;
+    packet.textures = tex;
     packet.uniforms = uniforms;
 
     return packet;

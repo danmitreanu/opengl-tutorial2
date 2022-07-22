@@ -13,6 +13,8 @@ enum class Uniform
     MVP,
     Texture0,
     Texture1,
+    Texture2,
+    Texture3,
 
     Count
 };
