@@ -72,7 +72,7 @@ void Engine::init_buffer()
 
 void Engine::init_shader()
 {
-    m_Shaders = get_resource_manager().get_shader("shader");
+    //m_Shaders = get_resource_manager().get_shader("shader");
 }
 
 void Engine::init_camera()
@@ -140,9 +140,12 @@ void Engine::render()
     model.InitTranslationTransform(Vector3f{ -1.0f * m_Terrain->get_width() / 2.0f, -1.0f * m_Terrain->get_height() / 2.0f, -50.0f });
     auto* u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model));
 
-    auto packet = m_Terrain->get_packet(&m_RenderQueue, m_Shaders.get(), u);
+    auto packets = m_Terrain->get_packets(&m_RenderQueue, u);
 
-    m_RenderQueue.push_render_packet(packet);
+    for (auto& packet : packets)
+    {
+        m_RenderQueue.push_render_packet(packet);
+    }
  
     m_RenderQueue.draw_all();
     m_RenderQueue.clear();

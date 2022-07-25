@@ -3,7 +3,7 @@
 int main()
 {
     Engine a;
-    if (!a.initialize("demo", 800, 600))
+    if (!a.initialize("demo", 1200, 900))
         return 1;
 
     a.run();

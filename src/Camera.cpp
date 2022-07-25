@@ -5,7 +5,7 @@
 Camera::Camera()
 {
     m_ProjInfo.FOV = 75.0f;
-    m_ProjInfo.zNear = 0.1f;
+    m_ProjInfo.zNear = 10.0f;
     m_ProjInfo.zFar = 10000.0f;
 }
 

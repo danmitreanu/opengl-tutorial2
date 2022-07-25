@@ -14,6 +14,12 @@ Terrain::Terrain()
 
     m_VertexLayout->AddVertexAttribute(AttributeType::Position, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::UV, 2);
+
+    m_WaterVertexLayout = std::make_shared<VertexLayout>();
+    m_WaterVbo = std::make_shared<VertexBuffer>();
+    m_WaterIbo = std::make_shared<IndexBuffer>();
+
+    m_WaterVertexLayout->AddVertexAttribute(AttributeType::Position, 2);
 }
 
 void Terrain::init_textures(ResourceManager* resource_manager)
@@ -24,6 +30,9 @@ void Terrain::init_textures(ResourceManager* resource_manager)
     m_SnowTex = resource_manager->get_texture("high_snow.jpeg");
 
     m_SplatMap = resource_manager->get_texture("splatmap.tga");
+
+    m_TerrainShader = resource_manager->get_shader("terrain_shader");
+    m_WaterShader = resource_manager->get_shader("water_shader");
 }
 
 void Terrain::load_heightmap(std::shared_ptr<HeightMap> height_map)
@@ -34,6 +43,12 @@ void Terrain::load_heightmap(std::shared_ptr<HeightMap> height_map)
 }
 
 void Terrain::generate()
+{
+    generate_terrain();
+    generate_water();
+}
+
+void Terrain::generate_terrain()
 {
     struct Vertex
     {
@@ -70,11 +85,33 @@ void Terrain::generate()
     m_Ibo->create(m_Vbo.get(), indices.data(), indices.size());
 }
 
-RenderPacket Terrain::get_packet(
+void Terrain::generate_water()
+{
+    float width = m_Width * m_SizeMultiplier;
+    float height = m_Height * m_SizeMultiplier;
+
+    float vertices[] = {
+        0.0f, 0.0f,
+        0.0f, (float)height,
+        (float)width, 0.0f,
+        (float)width, (float)height
+    };
+
+    uint32_t indices[] = {
+        0, 1, 2,
+        1, 2, 3
+    };
+
+    m_WaterVbo->create(vertices, m_WaterVertexLayout.get(), 4);
+    m_WaterIbo->create(m_WaterVbo.get(), indices, 6);
+}
+
+RenderPacket Terrain::create_terrain_packet(
     RenderingQueue* render_queue,
-    ShaderProgram* shader,
     IUniformNode* uniforms)
 {
+    static constexpr std::size_t topology_size = get_topology_size(GL_TRIANGLES);
+
     auto* tex = render_queue->create_texture(nullptr, m_GrassTex.get(), Uniform::Texture0);
     tex = render_queue->create_texture(tex, m_Rock1Tex.get(), Uniform::Texture1);
     tex = render_queue->create_texture(tex, m_Rock2Tex.get(), Uniform::Texture2);
@@ -84,12 +121,46 @@ RenderPacket Terrain::get_packet(
     RenderPacket packet;
     packet.vbo = m_Vbo.get();
     packet.ibo = m_Ibo.get();
-    packet.shader = shader;
+    packet.shader = m_TerrainShader.get();
     packet.topology = GL_TRIANGLES;
     packet.primitive_start = 0;
-    packet.primitive_end = m_Ibo->get_count() / get_topology_size(GL_TRIANGLES);
+    packet.primitive_end = m_Ibo->get_count() / topology_size;
     packet.textures = tex;
     packet.uniforms = uniforms;
 
     return packet;
+}
+
+RenderPacket Terrain::create_water_packet(
+    RenderingQueue* render_queue,
+    IUniformNode* uniforms)
+{
+    static constexpr std::size_t topology_size = get_topology_size(GL_TRIANGLES);
+
+    RenderPacket packet;
+    packet.blend.enabled = true;
+    packet.blend.source_func = BlendingFunc::SRC_ALPHA;
+    packet.blend.dest_func = BlendingFunc::ONE_MINUS_SRC_ALPHA;
+    packet.vbo = m_WaterVbo.get();
+    packet.ibo = m_WaterIbo.get();
+    packet.shader = m_WaterShader.get();
+    packet.topology = GL_TRIANGLES;
+    packet.primitive_start = 0;
+    packet.primitive_end = m_WaterIbo->get_count() / topology_size;
+    packet.textures = nullptr;
+    packet.uniforms = uniforms;
+
+    return packet;
+}
+
+std::vector<RenderPacket> Terrain::get_packets(RenderingQueue* render_queue, IUniformNode* uniforms)
+{
+    std::vector<RenderPacket> packets;
+
+    auto terrain_packet = create_terrain_packet(render_queue, uniforms);
+    auto water_packet = create_water_packet(render_queue, uniforms);
+
+    packets.push_back(terrain_packet);
+    packets.push_back(water_packet);
+    return packets;
 }

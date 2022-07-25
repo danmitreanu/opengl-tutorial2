@@ -69,7 +69,7 @@ void RenderingQueue::draw_all()
             current_vbo->bind();
         }
 
-        if (bound_textures_hash != packet.textures->hash)
+        if (packet.textures != nullptr && bound_textures_hash != packet.textures->hash)
         {
             bound_textures_hash = packet.textures->hash;
             set_textures(packet.textures);
@@ -81,7 +81,20 @@ void RenderingQueue::draw_all()
             active_shader->bind();
         }
 
-        set_uniforms(active_shader, packet.uniforms, packet.textures);
+        if (packet.uniforms != nullptr)
+            set_uniforms(active_shader, packet.uniforms, packet.textures);
+
+        if (packet.blend.enabled)
+        {
+            glEnable(GL_BLEND);
+            auto srcfunc = get_blending_func(packet.blend.source_func);
+            auto dstfunc = get_blending_func(packet.blend.dest_func);
+            glBlendFunc(srcfunc, dstfunc);
+        }
+        else
+        {
+            glDisable(GL_BLEND);
+        }
 
         if (packet.ibo != nullptr)
         {

@@ -4,6 +4,7 @@ out vec4 FragColor;
 
 in vec3 VertexColor;
 in vec2 TexCoords;
+in vec2 SplatCoords;
 in float FragHeight;
 
 uniform sampler2D Texture0;
@@ -19,10 +20,10 @@ void main()
     vec4 rock2 = texture(Texture2, TexCoords).rgba;
     vec4 snow = texture(Texture3, TexCoords).rgba;
 
-    vec4 splat = texture(Texture4, TexCoords);
+    vec4 splat = texture(Texture4, SplatCoords);
 
-    rock1 = mix(rock1, vec4(0.0, 0.5, 0.0, 1.0), 0.5);
-    grass = mix(grass, vec4(0.0, 1.0, 0.0, 1.0), 0.2);
+    //rock1 = mix(rock1, vec4(0.0, 0.5, 0.0, 1.0), 0.5);
+    //grass = mix(grass, vec4(0.0, 1.0, 0.0, 1.0), 0.2);
 
     float a = FragHeight;
     /*vec4 black = vec4(0.0, 0.0, 0.0, 0.3);
@@ -31,9 +32,9 @@ void main()
     tex = mix(tex, rock2, a);
     tex = mix(tex, snow, pow(a, 4.0));*/
 
-    vec4 tex = mix(grass, rock1, splat.r);
+    vec4 tex = mix(snow, rock1, splat.b);
     tex = mix(tex, rock2, splat.g);
-    tex = mix(tex, snow, splat.b);
+    tex = mix(tex, grass, splat.r);
 
     FragColor = vec4(tex);
 }

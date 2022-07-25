@@ -12,14 +12,20 @@
 #include "UniformNode.h"
 #include "ResourceManager.h"
 #include "RenderingQueue.h"
+#include "ShaderProgram.h"
 
 class Terrain
 {
 private:
     std::shared_ptr<HeightMap> m_HeightMap;
+
     std::shared_ptr<VertexLayout> m_VertexLayout;
     std::shared_ptr<VertexBuffer> m_Vbo;
     std::shared_ptr<IndexBuffer> m_Ibo;
+
+    std::shared_ptr<VertexLayout> m_WaterVertexLayout;
+    std::shared_ptr<VertexBuffer> m_WaterVbo;
+    std::shared_ptr<IndexBuffer> m_WaterIbo;
 
     std::shared_ptr<Texture> m_GrassTex;
     std::shared_ptr<Texture> m_Rock1Tex;
@@ -28,9 +34,18 @@ private:
 
     std::shared_ptr<Texture> m_SplatMap;
 
+    std::shared_ptr<ShaderProgram> m_TerrainShader;
+    std::shared_ptr<ShaderProgram> m_WaterShader;
+
     std::size_t m_Width;
     std::size_t m_Height;
     float m_SizeMultiplier = 10.0f;
+
+    void generate_terrain();
+    void generate_water();
+
+    RenderPacket create_terrain_packet(RenderingQueue*, IUniformNode*);
+    RenderPacket create_water_packet(RenderingQueue*, IUniformNode*);
 
 public:
     Terrain();
@@ -41,5 +56,5 @@ public:
     void init_textures(ResourceManager*);
     void load_heightmap(std::shared_ptr<HeightMap>);
     void generate();
-    RenderPacket get_packet(RenderingQueue*, ShaderProgram*, IUniformNode*);
+    std::vector<RenderPacket> get_packets(RenderingQueue*, IUniformNode*);
 };
