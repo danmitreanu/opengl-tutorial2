@@ -29,9 +29,13 @@ bool ApplicationBase::init_window(const char* window_name, std::size_t width, st
     glfwGetFramebufferSize(m_Window, &fb_width, &fb_height);
     glfwSetKeyCallback(m_Window, ApplicationBase::key_callback);
     glfwSetFramebufferSizeCallback(m_Window, ApplicationBase::framebuffer_size_callback);
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glViewport(0, 0, fb_width, fb_height);
+    m_FramebufferMultiplier = (float)fb_width / width;
     m_Width = fb_width;
     m_Height = fb_height;
+    m_MidX = fb_width / (2.0f * m_FramebufferMultiplier);
+    m_MidY = fb_height / (2.0f * m_FramebufferMultiplier);
 
 #ifdef _WIN32
     if (glewInit() != GLEW_OK)
@@ -42,6 +46,22 @@ bool ApplicationBase::init_window(const char* window_name, std::size_t width, st
 #endif
 
     return true;
+}
+
+void ApplicationBase::reset_mouse_pos()
+{
+    glfwSetCursorPos(m_Window, m_MidX, m_MidY);
+}
+
+Vector2f ApplicationBase::get_mouse_offset()
+{
+    double xpos, ypos;
+    glfwGetCursorPos(m_Window, &xpos, &ypos);
+
+    float offsetX = m_MidX - xpos;
+    float offsetY = m_MidY - ypos;
+
+    return Vector2f{ -1.0f * offsetX, offsetY };
 }
 
 void ApplicationBase::key_callback(GLFWwindow* window, int keycode, int scancode, int action, int mods)
@@ -64,6 +84,8 @@ void ApplicationBase::framebuffer_size_callback(GLFWwindow* window, int width, i
 
     handler->m_Width = width;
     handler->m_Height = height;
+    handler->m_MidX = width / (2.0f * handler->m_FramebufferMultiplier);
+    handler->m_MidY = height / (2.0f * handler->m_FramebufferMultiplier);
     glViewport(0, 0, width, height);
 
     handler->framebuffer_callback(handler, width, height);
@@ -114,6 +136,7 @@ ApplicationBaseKeyAction ApplicationBase::get_key_action(int action)
 
 void ApplicationBase::run()
 {
+    reset_mouse_pos();
     float last_time = glfwGetTime();
 
     while (!glfwWindowShouldClose(m_Window))

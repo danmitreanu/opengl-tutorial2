@@ -50,7 +50,7 @@ private:
     void key_callback(ApplicationBase*, ApplicationBaseKey, ApplicationBaseKeyAction);
     void framebuffer_callback(ApplicationBase*, std::size_t, std::size_t);
     void on_key(ApplicationBaseKey, bool);
-    void update_offset(float);
+    void update_movement(float delta, Vector2f& mouse);
 
     // ApplicationBase implementations
     void update(const float delta_time);

@@ -14,6 +14,9 @@ private:
     // Width and height for the framebuffer
     std::size_t m_Width;
     std::size_t m_Height;
+    float m_FramebufferMultiplier;
+    float m_MidX;
+    float m_MidY;
 
     ResourceManager m_ResourceManager;
 
@@ -27,6 +30,9 @@ protected:
     bool init_window(const char*, std::size_t, std::size_t);
     inline std::size_t get_width() { return m_Width; }
     inline std::size_t get_height() { return m_Height; }
+
+    void reset_mouse_pos();
+    Vector2f get_mouse_offset();
 
     virtual void update(float) = 0;
     virtual void render() = 0;

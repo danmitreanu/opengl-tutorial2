@@ -26,8 +26,17 @@ private:
     std::shared_ptr<Texture> m_Rock2Tex;
     std::shared_ptr<Texture> m_SnowTex;
 
+    std::shared_ptr<Texture> m_SplatMap;
+
+    std::size_t m_Width;
+    std::size_t m_Height;
+    float m_SizeMultiplier = 10.0f;
+
 public:
     Terrain();
+
+    inline float get_width() { return m_Width * m_SizeMultiplier; }
+    inline float get_height() { return m_Height * m_SizeMultiplier; }
 
     void init_textures(ResourceManager*);
     void load_heightmap(std::shared_ptr<HeightMap>);

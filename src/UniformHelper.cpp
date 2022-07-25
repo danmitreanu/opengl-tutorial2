@@ -21,7 +21,8 @@ UniformData::UniformData()
 		{ "Texture0", Uniform::Texture0 },
 		{ "Texture1", Uniform::Texture1 },
 		{ "Texture2", Uniform::Texture2 },
-		{ "Texture3", Uniform::Texture3 }
+		{ "Texture3", Uniform::Texture3 },
+		{ "Texture4", Uniform::Texture4 }
 	}};
 }
 

@@ -26,12 +26,13 @@ bool Texture::load(const char* filename)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int width, height, channels;
-    unsigned char* data = StbWrapper::stbi_wrapper_load(filename, &width, &height, &channels, 3);
+    unsigned char* data = StbWrapper::stbi_wrapper_load(filename, &width, &height, &channels, 4);
 
-    if (!data || channels != 3)
+    if (!data || (channels != 3 && channels != 4))
         return false;
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    GLint internal_format = channels == 3 ? GL_RGB : GL_RGBA;
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     StbWrapper::stbi_wrapper_free(data);
 

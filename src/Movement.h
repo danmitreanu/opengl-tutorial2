@@ -13,7 +13,7 @@ struct Movement
     bool pitch_up = false;
     bool pitch_down = false;
     
-
     bool tab = false;
     bool ctrl = false;
+    bool shift = false;
 };

@@ -94,7 +94,7 @@ void Engine::init_terrain()
 {
     m_HeightMap = std::make_shared<HeightMap>();
 #ifndef _WIN32
-    m_HeightMap->load("/Users/danm3/opengl/cmake/resources/height_map.jpeg");
+    m_HeightMap->load("/Users/danm3/opengl/cmake/resources/heightmap.tga");
 #else
     m_HeightMap->load("X:\\opengl-tutorial2\\resources\\height_map.jpeg");
 #endif
@@ -121,11 +121,11 @@ bool Engine::initialize(const char* window_name, std::size_t width, std::size_t 
 
 void Engine::update(const float delta_seconds)
 {
-    update_offset(delta_seconds);
-
-    m_ModelMatrix.InitRotateTransform(0.0f, 30.0f, 0.0f);
+    auto mouse = get_mouse_offset();
+    update_movement(delta_seconds, mouse);
 
     m_Camera.update_camera_matrices();
+    reset_mouse_pos();
 }
 
 void Engine::render()
@@ -136,60 +136,8 @@ void Engine::render()
     glClearDepth(1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    /*m_VertexBuffer->bind();
-    m_IndexBuffer->bind();
- 
-    m_Texture->bind(0);
-
-    m_Shaders->bind();
-    //m_Shaders->set_uniform(Uniform::Texture0, 0);
-    m_Shaders->set_uniform(Uniform::Model, m_ModelMatrix);
-    m_Shaders->set_uniform(Uniform::MVP, m_Camera.get_vp());
- 
-    glDrawElements(GL_TRIANGLES, 58806, GL_UNSIGNED_INT, 0);
-
-    m_VertexBuffer->unbind();*/
-
-    /*RenderPacket packet;
-    Matrix4f model_matrix;
-    model_matrix.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, 50.0f });
-
-    auto* u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model_matrix));
-    
-    auto* t1 = m_RenderQueue.create_texture(nullptr, m_Texture2.get(), Uniform::Texture0);
-
-    packet.textures = t1;
-    packet.uniforms = u;
-
-    packet.vbo = m_VertexBuffer.get();
-    packet.ibo = m_IndexBuffer.get();
-    packet.shader = m_Shaders.get();
-    packet.topology = GL_TRIANGLES;
-    packet.primitive_start = 0;
-    packet.primitive_end = 58806 / 3;
-
-    RenderPacket packet2;
-    Matrix4f model_matrix2;
-    model_matrix2.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, -50.0f });
-
-    u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model_matrix2));
-    auto* t2 = m_RenderQueue.create_texture(nullptr, m_Texture.get(), Uniform::Texture0);
-
-    packet2.uniforms = u;
-    packet2.textures = t2;
-
-    packet2.vbo = m_VertexBuffer.get();
-    packet2.ibo = m_IndexBuffer.get();
-    packet2.shader = m_Shaders.get();
-    packet2.topology = GL_TRIANGLES;
-    packet2.primitive_start = 0;
-    packet2.primitive_end = 58806 / 3;
-
-    m_RenderQueue.push_render_packet(packet);
-    m_RenderQueue.push_render_packet(packet2);*/
-
     Matrix4f model;
-    model.InitTranslationTransform(Vector3f{ 0.0f, 0.0f, -50.0f });
+    model.InitTranslationTransform(Vector3f{ -1.0f * m_Terrain->get_width() / 2.0f, -1.0f * m_Terrain->get_height() / 2.0f, -50.0f });
     auto* u = m_RenderQueue.create_uniform(nullptr, Uniform::MVP, m_Camera.get_mvp(model));
 
     auto packet = m_Terrain->get_packet(&m_RenderQueue, m_Shaders.get(), u);
@@ -230,39 +178,44 @@ void Engine::on_key(ApplicationBaseKey key, bool pressed)
         case APP_KEY_E: m_Movement.yaw_right = pressed; break;
         case APP_KEY_Z: m_Movement.pitch_up = pressed; break;
         case APP_KEY_X: m_Movement.pitch_down = pressed; break;
+        case APP_KEY_LSHIFT: m_Movement.shift = pressed; break;
 
         default: break;
     };
 }
 
-void Engine::update_offset(float delta_seconds)
+void Engine::update_movement(float delta_seconds, Vector2f& mouse_offset)
 {
-    const float speed = 150.0f; // units per sec
-    const float camera_coeff = 0.5f;
+    //const float speed = 150.0f; // units per sec
+    const float speed = m_Movement.shift ? 1500.0f : 800.0f;
+    const float camera_coeff = 2.0f;
 
-    float diff = delta_seconds * speed;
+    float move_diff = delta_seconds * speed;
+    float yaw_diff = delta_seconds * mouse_offset.x;
+    float pitch_diff = delta_seconds * mouse_offset.y;
 
-    if (m_Movement.yaw_left != m_Movement.yaw_right)
+    // maintain mouse speed on all axes
+    float yratio = (float)get_width() / get_height();
+
+    if (yaw_diff != 0)
     {
-        float yaw_dir = -1.0f * int(m_Movement.yaw_left) + 1.0f * int(m_Movement.yaw_right);
-        m_Camera.on_yaw(yaw_dir * diff * camera_coeff);
+        m_Camera.on_yaw(yaw_diff * camera_coeff);
     }
 
-    if (m_Movement.pitch_up != m_Movement.pitch_down)
+    if (pitch_diff != 0)
     {
-        float pitch_dir = -1.0f * int(m_Movement.pitch_up) + 1.0f * int(m_Movement.pitch_down);
-        m_Camera.on_pitch(pitch_dir * diff * camera_coeff);
+        m_Camera.on_pitch(yratio * pitch_diff * camera_coeff);
     }
  
     if (m_Movement.up != m_Movement.down)
     {
         float direction = -1.0f * int(m_Movement.up) + 1.0f * int(m_Movement.down);
-        m_Camera.on_move_forward(direction * diff);
+        m_Camera.on_move_forward(direction * move_diff);
     }
 
     if (m_Movement.left != m_Movement.right)
     {
         float direction = 1.0f * int(m_Movement.left) - 1.0f * int(m_Movement.right);
-        m_Camera.on_move_side(direction * diff);
+        m_Camera.on_move_side(direction * move_diff);
     }
 }

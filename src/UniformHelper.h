@@ -15,6 +15,7 @@ enum class Uniform
     Texture1,
     Texture2,
     Texture3,
+    Texture4,
 
     Count
 };
