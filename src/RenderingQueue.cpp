@@ -144,10 +144,10 @@ void RenderingQueue::draw_ibo(
     glDrawElements(mode, count, GL_UNSIGNED_INT, (void*)start);
 }
 
-void RenderingQueue::set_uniforms(ShaderProgram* active_shader, IUniformNode* first, TextureNode* first_texture)
+void RenderingQueue::set_uniforms(ShaderProgram* active_shader, IUniformNode* first_uniform, TextureNode* first_texture)
 {
     {
-        auto node = first;
+        auto node = first_uniform;
         while (node != nullptr)
         {
             node->set_uniform(active_shader);
