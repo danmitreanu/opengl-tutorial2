@@ -4,20 +4,24 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <filesystem>
 
 #include "Texture.h"
 #include "ShaderProgram.h"
 
+struct ResourceManagerPaths
+{
+    std::filesystem::path current_dir;
+    std::filesystem::path textures_path;
+    std::filesystem::path shaders_path;
+
+    ResourceManagerPaths();
+};
+
 class ResourceManager
 {
 private:
-#ifndef _WIN32
-    static inline const std::string m_TexturePath = "/Users/danm3/opengl/cmake/resources/";
-    static inline const std::string m_ShadersPath = "/Users/danm3/opengl/cmake/shaders/";
-#else
-    static inline const std::string m_TexturePath = "X:\\opengl-tutorial2\\resources\\";
-    static inline const std::string m_ShadersPath = "X:\\opengl-tutorial2\\shaders\\";
-#endif
+    static ResourceManagerPaths m_Paths;
 
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_Textures;
     std::unordered_map<std::string, std::shared_ptr<ShaderProgram>> m_ShaderPrograms;

@@ -9,5 +9,5 @@ struct TextureNode
     Uniform  target;
     uint64_t hash = 0;
 
-    uint32_t    slot;
+    uint8_t slot;
 };

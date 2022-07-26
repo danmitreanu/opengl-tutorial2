@@ -170,7 +170,7 @@ void RenderingQueue::set_textures(TextureNode* first)
 {
     auto node = first;
 
-    uint32_t slot = 0;
+    uint8_t slot = 0;
     while (node != nullptr && slot <= 8)
     {
         node->value->bind(slot);

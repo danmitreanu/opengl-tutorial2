@@ -5,10 +5,26 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <filesystem>
+
+ResourceManagerPaths ResourceManager::m_Paths;
+
+ResourceManagerPaths::ResourceManagerPaths()
+{
+#if DEBUG
+    current_dir = std::filesystem::current_path().parent_path();
+#else
+    current_dir = std::filesystem::current_path();
+#endif
+
+    textures_path = current_dir / "resources";
+    shaders_path = current_dir / "shaders";
+}
 
 void ResourceManager::load_texture(const std::string& name, std::shared_ptr<Texture>& out)
 {
-    auto path = m_TexturePath + name;
+    auto fs_path = m_Paths.textures_path / name;
+    auto path = fs_path.string();
 
     auto texture = std::make_shared<Texture>();
     if (!texture->load(path.c_str()))
@@ -22,7 +38,8 @@ void ResourceManager::load_texture(const std::string& name, std::shared_ptr<Text
 
 void ResourceManager::load_shader(const std::string& name, std::shared_ptr<ShaderProgram>& out)
 {
-    auto path = m_ShadersPath + name;
+    auto fs_path = m_Paths.shaders_path / name;
+    auto path = fs_path.string();
     auto v_path = path + ".vs";
     auto f_path = path + ".fs";
 
@@ -45,6 +62,8 @@ std::shared_ptr<Texture> ResourceManager::get_texture(const std::string& texture
     std::shared_ptr<Texture> texture;
     load_texture(texture_name, texture);
 
+    m_Textures.insert({ texture_name, texture });
+
     return texture;
 }
 
@@ -55,6 +74,8 @@ std::shared_ptr<ShaderProgram> ResourceManager::get_shader(const std::string& sh
 
     std::shared_ptr<ShaderProgram> shader;
     load_shader(shader_name, shader);
+
+    m_ShaderPrograms.insert({ shader_name, shader });
 
     return shader;
 }
