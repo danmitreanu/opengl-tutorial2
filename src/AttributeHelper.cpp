@@ -16,15 +16,6 @@ struct AttributeData
 
 AttributeData::AttributeData()
 {
-    /*attributes = std::array<std::pair<const char*, AttributeType>, (std::size_t)AttributeType::Count>
-    {{
-        { "Position", AttributeType::Position },
-        { "Color", AttributeType::Color },
-        { "UV", AttributeType::UV },
-        { "Height", AttributeType::Height },
-        { "Normal", AttributeType::Normal }
-    }};*/
-
     magic_enum::enum_for_each<AttributeType>([this] (auto val)
     {
         constexpr AttributeType attr = val;
