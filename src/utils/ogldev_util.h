@@ -30,7 +30,7 @@
 #include <string.h>
 #include <assert.h>
 #include <time.h>
-#include "OpenGL.h"
+#include "../OpenGL.h"
 #include "ogldev_types.h"
 
 using namespace std;

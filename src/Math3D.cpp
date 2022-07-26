@@ -27,7 +27,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include "ogldev_util.h"
+#include "utils/ogldev_util.h"
 #include "Math3d.h"
 
 Vector3f Vector3f::Cross(const Vector3f& v) const

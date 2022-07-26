@@ -1,5 +1,5 @@
 #include "StbWrapper.h"
-#include "stb_image.h"
+#include "utils/stb_image.h"
 
 unsigned char* StbWrapper::stbi_wrapper_load(const char* filename,
     int* width,
