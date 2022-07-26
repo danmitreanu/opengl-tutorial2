@@ -29,7 +29,8 @@ bool ApplicationBase::init_window(const char* window_name, std::size_t width, st
     glfwGetFramebufferSize(m_Window, &fb_width, &fb_height);
     glfwSetKeyCallback(m_Window, ApplicationBase::key_callback);
     glfwSetFramebufferSizeCallback(m_Window, ApplicationBase::framebuffer_size_callback);
-    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetWindowFocusCallback(m_Window, ApplicationBase::focus_callback);
+    glfwSetInputMode(m_Window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
     glViewport(0, 0, fb_width, fb_height);
     m_FramebufferMultiplier = (float)fb_width / width;
     m_Width = fb_width;
@@ -40,12 +41,17 @@ bool ApplicationBase::init_window(const char* window_name, std::size_t width, st
 #ifdef _WIN32
     if (glewInit() != GLEW_OK)
     {
-        std::cout << "GLEW could not be initialized." << std::endl;
+        std::cout << "WIN32 GLEW could not be initialized." << std::endl;
         return false;
     }
 #endif
 
     return true;
+}
+
+void ApplicationBase::hide_mouse()
+{
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void ApplicationBase::reset_mouse_pos()
@@ -89,6 +95,13 @@ void ApplicationBase::framebuffer_size_callback(GLFWwindow* window, int width, i
     glViewport(0, 0, width, height);
 
     handler->framebuffer_callback(handler, width, height);
+}
+
+void ApplicationBase::focus_callback(GLFWwindow* window, int focused)
+{
+    ApplicationBase* handler = reinterpret_cast<ApplicationBase*>(glfwGetWindowUserPointer(window));
+
+    handler->focus_callback(handler, focused == GLFW_TRUE ? true : false);
 }
 
 ApplicationBaseKey ApplicationBase::get_key(int keycode)

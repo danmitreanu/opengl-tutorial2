@@ -22,6 +22,7 @@ private:
 
     static void key_callback(GLFWwindow*, int, int, int, int);
     static void framebuffer_size_callback(GLFWwindow*, int, int);
+    static void focus_callback(GLFWwindow*, int);
 
     static ApplicationBaseKey get_key(int);
     static ApplicationBaseKeyAction get_key_action(int);
@@ -31,6 +32,7 @@ protected:
     inline std::size_t get_width() { return m_Width; }
     inline std::size_t get_height() { return m_Height; }
 
+    void hide_mouse();
     void reset_mouse_pos();
     Vector2f get_mouse_offset();
 
@@ -41,6 +43,7 @@ protected:
 
     virtual void key_callback(ApplicationBase*, ApplicationBaseKey, ApplicationBaseKeyAction) {}
     virtual void framebuffer_callback(ApplicationBase*, std::size_t, std::size_t) {}
+    virtual void focus_callback(ApplicationBase*, bool) {}
 
 public:
     ApplicationBase() = default;

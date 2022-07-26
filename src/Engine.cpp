@@ -110,6 +110,8 @@ bool Engine::initialize(const char* window_name, std::size_t width, std::size_t 
     if (!init_window(window_name, width, height))
         return false;
 
+    hide_mouse();
+
     init_buffer();
     init_shader();
     init_camera();
@@ -169,6 +171,11 @@ void Engine::framebuffer_callback(ApplicationBase* app, std::size_t width, std::
     handler->m_Camera.update_camera_matrices();
 }
 
+void Engine::focus_callback(ApplicationBase*, bool)
+{
+    hide_mouse();
+}
+
 void Engine::on_key(ApplicationBaseKey key, bool pressed)
 {
     switch (key)
@@ -187,7 +194,7 @@ void Engine::on_key(ApplicationBaseKey key, bool pressed)
     };
 }
 
-void Engine::update_movement(float delta_seconds, Vector2f& mouse_offset)
+void Engine::update_movement(float delta_seconds, const Vector2f& mouse_offset)
 {
     //const float speed = 150.0f; // units per sec
     const float speed = m_Movement.shift ? 1500.0f : 800.0f;
