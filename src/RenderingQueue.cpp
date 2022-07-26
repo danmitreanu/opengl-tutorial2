@@ -60,6 +60,7 @@ void RenderingQueue::draw_all()
     IndexBuffer* current_ibo = nullptr;
     ShaderProgram* active_shader = nullptr;
     uint64_t bound_textures_hash = 0;
+    BlendingState active_blend_state;
 
     for (const auto& packet : m_Packets)
     {
@@ -84,16 +85,18 @@ void RenderingQueue::draw_all()
         if (packet.uniforms != nullptr)
             set_uniforms(active_shader, packet.uniforms, packet.textures);
 
-        if (packet.blend.enabled)
+        if (!packet.blend.enabled)
         {
+            active_blend_state.enabled = false;
+            glDisable(GL_BLEND);
+        }
+        else if (packet.blend != active_blend_state)
+        {
+            active_blend_state = packet.blend;
             glEnable(GL_BLEND);
             auto srcfunc = get_blending_func(packet.blend.source_func);
             auto dstfunc = get_blending_func(packet.blend.dest_func);
             glBlendFunc(srcfunc, dstfunc);
-        }
-        else
-        {
-            glDisable(GL_BLEND);
         }
 
         if (packet.ibo != nullptr)

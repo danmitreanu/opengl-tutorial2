@@ -1,5 +1,13 @@
 #include "RenderPacket.h"
 
+bool BlendingState::equals(const BlendingState& cmp) const
+{
+    return
+        enabled == cmp.enabled &&
+        source_func == cmp.source_func &&
+        dest_func == cmp.dest_func;
+}
+
 bool RenderPacket::compare(RenderPacket const& packet1, RenderPacket const& packet2)
 {
     if (packet1.priority != packet2.priority)
@@ -12,6 +20,16 @@ bool RenderPacket::compare(RenderPacket const& packet1, RenderPacket const& pack
         return packet1.vbo < packet2.vbo;
 
     return packet1.textures < packet2.textures;
+}
+
+bool operator==(BlendingState const& state1, BlendingState const& state2)
+{
+    return state1.equals(state2);
+}
+
+bool operator!=(BlendingState const& state1, BlendingState const& state2)
+{
+    return !state1.equals(state2);
 }
 
 bool operator<(RenderPacket const& packet1, RenderPacket const& packet2)

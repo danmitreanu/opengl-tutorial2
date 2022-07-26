@@ -31,7 +31,12 @@ struct BlendingState
 
     BlendingFunc source_func;
     BlendingFunc dest_func;
+
+    bool equals(const BlendingState&) const;
 };
+
+bool operator==(BlendingState const&, BlendingState const&);
+bool operator!=(BlendingState const&, BlendingState const&);
 
 struct RenderPacket
 {
