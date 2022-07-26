@@ -47,6 +47,8 @@ private:
     RenderPacket create_terrain_packet(RenderingQueue*, IUniformNode*);
     RenderPacket create_water_packet(RenderingQueue*, IUniformNode*);
 
+    Vector3f get_terrain_normal(std::size_t, std::size_t);
+
 public:
     Terrain();
 

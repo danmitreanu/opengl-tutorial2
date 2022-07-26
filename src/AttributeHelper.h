@@ -8,6 +8,7 @@ enum class AttributeType
     Color,
     UV,
     Height,
+    Normal,
 
     Count
 };

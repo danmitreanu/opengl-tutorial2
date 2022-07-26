@@ -26,12 +26,14 @@ void HeightMap::read_heights(unsigned char* data, const short bytes_per_pixel)
         const unsigned char* offset = data + (i + m_TexWidth * j) * bytes_per_pixel;
         unsigned char red = offset[0];
 
-        m_Height[i][j] = red / 255.0f;
+        m_Height[i + m_TexWidth * j] = red / 255.0f;
     }
 }
 
 float HeightMap::get_height(std::size_t x, std::size_t y)
 {
-    //assert(x < m_TexWidth && y < m_TexHeight);
-    return m_Height[x][y];
+    if (x >= m_TexWidth || y >= m_TexHeight)
+        return 0.0f;
+
+    return m_Height[x + m_TexWidth * y];
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StbWrapper.h"
+#include "Math3D.h"
 
 #include <iostream>
 #include <array>
@@ -11,7 +12,7 @@ private:
     static const std::size_t m_TexWidth = 2048;
     static const std::size_t m_TexHeight = 2048;
 
-    float m_Height[m_TexWidth][m_TexHeight];
+    float m_Height[m_TexWidth * m_TexHeight];
 
     void read_heights(unsigned char*, const short);
 

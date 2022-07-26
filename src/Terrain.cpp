@@ -14,6 +14,7 @@ Terrain::Terrain()
 
     m_VertexLayout->AddVertexAttribute(AttributeType::Position, 3);
     m_VertexLayout->AddVertexAttribute(AttributeType::UV, 2);
+    m_VertexLayout->AddVertexAttribute(AttributeType::Normal, 3);
 
     m_WaterVertexLayout = std::make_shared<VertexLayout>();
     m_WaterVbo = std::make_shared<VertexBuffer>();
@@ -42,6 +43,23 @@ void Terrain::load_heightmap(std::shared_ptr<HeightMap> height_map)
     m_Height = m_HeightMap->get_height();
 }
 
+Vector3f Terrain::get_terrain_normal(std::size_t x, std::size_t y)
+{
+    static const Vector3f off{ 1.0f, 1.0f, 0.0f };
+    float hL = m_HeightMap->get_height(x - off.x, y);
+    float hR = m_HeightMap->get_height(x + off.x, y);
+    float hD = m_HeightMap->get_height(x, y - off.y);
+    float hU = m_HeightMap->get_height(x, y + off.y);
+
+    Vector3f normal;
+    normal.x = hL - hR;
+    normal.y = hD - hU;
+    normal.z = 0.01f;
+    normal = normal.Normalize();
+
+    return normal;
+}
+
 void Terrain::generate()
 {
     generate_terrain();
@@ -54,6 +72,7 @@ void Terrain::generate_terrain()
     {
         Vector3f pos;
         Vector2f uv;
+        Vector3f normal;
     };
 
     std::vector<Vertex> vertices;
@@ -62,11 +81,12 @@ void Terrain::generate_terrain()
     for (std::size_t y = 0; y < m_Height; y++)
     for (std::size_t x = 0; x < m_Width; x++)
     {
-        float th = m_HeightMap->get_height(x, y);
+        float map_height = m_HeightMap->get_height(x, y);
 
         Vertex v;
-        v.pos = Vector3f{ x * m_SizeMultiplier, y * m_SizeMultiplier, th };
+        v.pos = Vector3f{ x * m_SizeMultiplier, y * m_SizeMultiplier, map_height };
         v.uv = Vector2f{ float(x) / m_Width, float(y) / m_Height };
+        v.normal = get_terrain_normal(x, y);
         vertices.push_back(v);
     }
 
