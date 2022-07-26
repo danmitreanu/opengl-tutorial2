@@ -10,6 +10,8 @@ TutorialApp.xcodeproj/
 
 **/.clang-format
 **/.cmake
+*.cmake
 
 *.xctestrun
-*.txt
+CMakeCache.txt
+# *.txt

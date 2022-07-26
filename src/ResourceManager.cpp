@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 #include "Texture.h"
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,6 +30,7 @@ void ResourceManager::load_texture(const std::string& name, std::shared_ptr<Text
     auto texture = std::make_shared<Texture>();
     if (!texture->load(path.c_str()))
     {
+        std::cout << "ResourceManager: Could not load texture " << path << "." << std::endl;
         out = nullptr;
         return;
     }
@@ -47,6 +49,7 @@ void ResourceManager::load_shader(const std::string& name, std::shared_ptr<Shade
 
     if (!shader->create(v_path.c_str(), f_path.c_str()))
     {
+        std::cout << "ResourceManager: Could not load shader " << path << "." << std::endl;
         out = nullptr;
         return;
     }
