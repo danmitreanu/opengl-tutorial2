@@ -48,7 +48,7 @@ void Camera::on_yaw(float rad)
 
 void Camera::on_pitch(float rad)
 {
-    const float half_pi = 90.0f;
+    const float half_pi = 89.0f;
     m_Pitch += rad;
 
     // clamp between -pi/2 ; pi/2
