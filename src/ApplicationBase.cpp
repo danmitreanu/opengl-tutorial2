@@ -4,9 +4,6 @@
 ApplicationBase::~ApplicationBase()
 {
     glfwTerminate();
-#ifdef _WIN32
-    glewTerminate();
-#endif
 }
 
 bool ApplicationBase::init_window(const char* window_name, std::size_t width, std::size_t height)
@@ -32,9 +29,9 @@ bool ApplicationBase::init_window(const char* window_name, std::size_t width, st
 
     int fb_width, fb_height;
     glfwGetFramebufferSize(m_Window, &fb_width, &fb_height);
-    glfwSetKeyCallback(m_Window, ApplicationBase::key_callback);
-    glfwSetFramebufferSizeCallback(m_Window, ApplicationBase::framebuffer_size_callback);
-    glfwSetWindowFocusCallback(m_Window, ApplicationBase::focus_callback);
+    glfwSetKeyCallback(m_Window, ApplicationBase::glfw_key_callback);
+    glfwSetFramebufferSizeCallback(m_Window, ApplicationBase::glfw_framebuffer_size_callback);
+    glfwSetWindowFocusCallback(m_Window, ApplicationBase::glfw_focus_callback);
     glfwSetInputMode(m_Window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
     glViewport(0, 0, fb_width, fb_height);
 
@@ -74,7 +71,7 @@ Vector2f ApplicationBase::get_mouse_offset()
     return Vector2f{ -1.0f * offsetX, offsetY };
 }
 
-void ApplicationBase::key_callback(GLFWwindow* window, int keycode, int scancode, int action, int mods)
+void ApplicationBase::glfw_key_callback(GLFWwindow* window, int keycode, int scancode, int action, int mods)
 {
     ApplicationBase* handler = reinterpret_cast<ApplicationBase*>(glfwGetWindowUserPointer(window));
     if (keycode == GLFW_KEY_ESCAPE)
@@ -102,7 +99,7 @@ void ApplicationBase::on_window_resize(std::size_t width, std::size_t height)
     }
 }
 
-void ApplicationBase::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void ApplicationBase::glfw_framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     ApplicationBase* handler = reinterpret_cast<ApplicationBase*>(glfwGetWindowUserPointer(window));
 
@@ -112,7 +109,7 @@ void ApplicationBase::framebuffer_size_callback(GLFWwindow* window, int width, i
     handler->framebuffer_callback(handler, width, height);
 }
 
-void ApplicationBase::focus_callback(GLFWwindow* window, int focused)
+void ApplicationBase::glfw_focus_callback(GLFWwindow* window, int focused)
 {
     ApplicationBase* handler = reinterpret_cast<ApplicationBase*>(glfwGetWindowUserPointer(window));
 

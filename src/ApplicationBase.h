@@ -22,13 +22,11 @@ class ApplicationBase
 {
 private:
     GLFWwindow* m_Window = nullptr;
-    // Width and height for the framebuffer
-
     WindowState m_WindowState;
 
-    static void key_callback(GLFWwindow*, int, int, int, int);
-    static void framebuffer_size_callback(GLFWwindow*, int, int);
-    static void focus_callback(GLFWwindow*, int);
+    static void glfw_key_callback(GLFWwindow*, int, int, int, int);
+    static void glfw_framebuffer_size_callback(GLFWwindow*, int, int);
+    static void glfw_focus_callback(GLFWwindow*, int);
 
     void on_window_resize(std::size_t, std::size_t);
 
