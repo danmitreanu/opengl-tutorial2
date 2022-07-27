@@ -23,8 +23,10 @@ Terrain::Terrain()
     m_WaterVertexLayout->AddVertexAttribute(AttributeType::Position, 2);
 }
 
-void Terrain::init_textures(ResourceManager* resource_manager)
+void Terrain::init_textures()
 {
+    auto* resource_manager = ResourceManager::get_instance();
+
     m_GrassTex = resource_manager->get_texture("high_grass.jpeg");
     m_Rock1Tex = resource_manager->get_texture("high_rock1.jpeg");
     m_Rock2Tex = resource_manager->get_texture("high_rock2.jpeg");
@@ -136,7 +138,7 @@ RenderPacket Terrain::create_terrain_packet(
     tex = render_queue->create_texture(tex, m_Rock1Tex.get(), Uniform::Texture1);
     tex = render_queue->create_texture(tex, m_Rock2Tex.get(), Uniform::Texture2);
     tex = render_queue->create_texture(tex, m_SnowTex.get(), Uniform::Texture3);
-    tex = render_queue->create_texture(tex, m_SplatMap.get(), Uniform::Texture4);
+    tex = render_queue->create_texture(tex, m_SplatMap.get(), Uniform::SplatMapTexture);
 
     RenderPacket packet;
     packet.vbo = m_Vbo.get();

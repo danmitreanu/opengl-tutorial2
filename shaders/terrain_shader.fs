@@ -11,7 +11,7 @@ uniform sampler2D Texture0;
 uniform sampler2D Texture1;
 uniform sampler2D Texture2;
 uniform sampler2D Texture3;
-uniform sampler2D Texture4; // SplatMap
+uniform sampler2D SplatMapTexture;
 
 void main()
 {
@@ -20,7 +20,7 @@ void main()
     vec4 rock2 = texture(Texture2, TexCoords).rgba;
     vec4 snow = texture(Texture3, TexCoords).rgba;
 
-    vec4 splat = texture(Texture4, SplatCoords);
+    vec4 splat = texture(SplatMapTexture, SplatCoords);
 
     float a = FragHeight;
 

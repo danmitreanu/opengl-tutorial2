@@ -16,6 +16,7 @@ enum class Uniform
     Texture2,
     Texture3,
     Texture4,
+    SplatMapTexture,
 
     Count
 };

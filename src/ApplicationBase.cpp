@@ -178,5 +178,12 @@ void ApplicationBase::run()
 
         glfwSwapBuffers(m_Window);
         glfwPollEvents();
+
+        m_WindowState.reset();
     }
+}
+
+void WindowState::reset()
+{
+    resized = false;
 }

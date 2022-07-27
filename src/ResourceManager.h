@@ -21,6 +21,8 @@ struct ResourceManagerPaths
 class ResourceManager
 {
 private:
+    static std::shared_ptr<ResourceManager> m_Singleton;
+
     static ResourceManagerPaths m_Paths;
 
     std::unordered_map<std::string, std::shared_ptr<Texture>> m_Textures;
@@ -31,6 +33,9 @@ private:
 
 public:
     ResourceManager() = default;
+
+    void initialize();
+    static ResourceManager* get_instance();
 
     std::shared_ptr<Texture> get_texture(const std::string& tex_file);
     std::shared_ptr<ShaderProgram> get_shader(const std::string& name);

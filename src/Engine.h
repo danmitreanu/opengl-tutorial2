@@ -30,8 +30,6 @@ private:
 
     RenderingQueue m_RenderQueue;
 
-    std::shared_ptr<ShaderProgram> m_Shaders;
-
     std::shared_ptr<Texture> m_Texture;
     std::shared_ptr<Texture> m_Texture2;
     std::shared_ptr<HeightMap> m_HeightMap;
@@ -42,7 +40,6 @@ private:
     Vector3f m_Offset{ 0, 0, 0 };
 
     void init_buffer();
-    void init_shader();
     void init_camera();
     void init_texture();
     void init_terrain();

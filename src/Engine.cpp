@@ -70,11 +70,6 @@ void Engine::init_buffer()
 
 }
 
-void Engine::init_shader()
-{
-    //m_Shaders = get_resource_manager().get_shader("shader");
-}
-
 void Engine::init_camera()
 {
     m_Camera.change_framebuff_dimensions(get_width(), get_height());
@@ -86,8 +81,8 @@ void Engine::init_camera()
 
 void Engine::init_texture()
 {
-    m_Texture = get_resource_manager().get_texture("mc.jpeg");
-    m_Texture2 = get_resource_manager().get_texture("grass.jpeg");
+    m_Texture = ResourceManager::get_instance()->get_texture("mc.jpeg");
+    m_Texture2 = ResourceManager::get_instance()->get_texture("grass.jpeg");
 }
 
 void Engine::init_terrain()
@@ -100,7 +95,7 @@ void Engine::init_terrain()
 #endif
 
     m_Terrain = std::make_shared<Terrain>();
-    m_Terrain->init_textures(&get_resource_manager());
+    m_Terrain->init_textures();
     m_Terrain->load_heightmap(m_HeightMap);
     m_Terrain->generate();
 }
@@ -113,7 +108,6 @@ bool Engine::initialize(const char* window_name, std::size_t width, std::size_t 
     hide_mouse();
 
     init_buffer();
-    init_shader();
     init_camera();
     init_texture();
     init_terrain();
@@ -196,7 +190,6 @@ void Engine::on_key(ApplicationBaseKey key, bool pressed)
 
 void Engine::update_movement(float delta_seconds, const Vector2f& mouse_offset)
 {
-    //const float speed = 150.0f; // units per sec
     const float speed = m_Movement.shift ? 1500.0f : 800.0f;
     const float camera_coeff = 2.0f;
 
@@ -204,7 +197,6 @@ void Engine::update_movement(float delta_seconds, const Vector2f& mouse_offset)
     float yaw_diff = delta_seconds * mouse_offset.x;
     float pitch_diff = delta_seconds * mouse_offset.y;
 
-    // maintain mouse speed on all axes
     float yratio = (float)get_width() / get_height();
 
     if (yaw_diff != 0)

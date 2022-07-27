@@ -14,6 +14,8 @@ struct WindowState
     float framebuffer_scale = 1.0f;
     float midpoint[2] = { 0.0f, 0.0f };
     bool resized = false;
+
+    void reset();
 };
 
 class ApplicationBase
@@ -23,8 +25,6 @@ private:
     // Width and height for the framebuffer
 
     WindowState m_WindowState;
-
-    ResourceManager m_ResourceManager;
 
     static void key_callback(GLFWwindow*, int, int, int, int);
     static void framebuffer_size_callback(GLFWwindow*, int, int);
@@ -46,8 +46,6 @@ protected:
 
     virtual void update(float) = 0;
     virtual void render() = 0;
-
-    inline ResourceManager& get_resource_manager() { return m_ResourceManager; }
 
     virtual void key_callback(ApplicationBase*, ApplicationBaseKey, ApplicationBaseKeyAction) {}
     virtual void framebuffer_callback(ApplicationBase*, std::size_t, std::size_t) {}

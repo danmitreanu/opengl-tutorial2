@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <filesystem>
 
+std::shared_ptr<ResourceManager> ResourceManager::m_Singleton;
 ResourceManagerPaths ResourceManager::m_Paths;
 
 ResourceManagerPaths::ResourceManagerPaths()
@@ -20,6 +21,19 @@ ResourceManagerPaths::ResourceManagerPaths()
 
     textures_path = current_dir / "resources";
     shaders_path = current_dir / "shaders";
+}
+
+void ResourceManager::initialize()
+{
+    m_Singleton = std::make_shared<ResourceManager>();
+}
+
+ResourceManager* ResourceManager::get_instance()
+{
+    if (!m_Singleton)
+        m_Singleton = std::make_shared<ResourceManager>();
+
+    return m_Singleton.get();
 }
 
 void ResourceManager::load_texture(const std::string& name, std::shared_ptr<Texture>& out)
