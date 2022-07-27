@@ -35,7 +35,6 @@ bool ApplicationBase::init_window(const char* window_name, std::size_t width, st
     glfwSetInputMode(m_Window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
     glViewport(0, 0, fb_width, fb_height);
 
-
     m_WindowState.framebuffer_scale = (float)fb_width / width;
     on_window_resize((std::size_t)fb_width, (std::size_t)fb_height);
 
@@ -74,11 +73,6 @@ Vector2f ApplicationBase::get_mouse_offset()
 void ApplicationBase::glfw_key_callback(GLFWwindow* window, int keycode, int scancode, int action, int mods)
 {
     ApplicationBase* handler = reinterpret_cast<ApplicationBase*>(glfwGetWindowUserPointer(window));
-    if (keycode == GLFW_KEY_ESCAPE)
-    {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-        return;
-    }
 
     auto app_key = get_key(keycode);
     auto app_action = get_key_action(action);
@@ -161,10 +155,9 @@ ApplicationBaseKeyAction ApplicationBase::get_key_action(int action)
 
 void ApplicationBase::run()
 {
-    reset_mouse_pos();
     float last_time = glfwGetTime();
 
-    while (!glfwWindowShouldClose(m_Window))
+    while (!m_WindowState.should_close)
     {
         float now_time = glfwGetTime();
 
@@ -178,6 +171,11 @@ void ApplicationBase::run()
 
         m_WindowState.reset();
     }
+}
+
+void ApplicationBase::close()
+{
+    m_WindowState.should_close = true;
 }
 
 void WindowState::reset()

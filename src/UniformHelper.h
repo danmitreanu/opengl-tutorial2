@@ -6,7 +6,8 @@ struct UniformData;
 
 enum class Uniform
 {
-    Offset = 0,
+    None = 0,
+    Offset,
     Model,
     View,
     Projection,

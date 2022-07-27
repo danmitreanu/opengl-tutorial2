@@ -23,6 +23,7 @@ private:
 
     static void draw_vbo(VertexBuffer*, GLenum mode, std::size_t, std::size_t);
     static void draw_ibo(GLenum mode, std::size_t, std::size_t);
+    static void setup_blending(ShaderProgram*, BlendingState&);
 
 public:
     RenderingQueue() = default;

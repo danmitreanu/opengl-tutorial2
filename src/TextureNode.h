@@ -5,8 +5,8 @@
 struct TextureNode
 {
     TextureNode* next = nullptr;
-    Texture* value;
-    Uniform  target;
+    Texture* value = nullptr;
+    Uniform  target = Uniform::None;
     uint64_t hash = 0;
 
     uint8_t slot;

@@ -17,7 +17,7 @@ UniformData::UniformData()
     {
         constexpr Uniform unif = val;
         int index = magic_enum::enum_integer(unif);
-        if (index == (int)Uniform::Count)
+        if (index == (int)Uniform::Count || index == (int)Uniform::None)
             return;
 
         auto name = magic_enum::enum_name(unif);

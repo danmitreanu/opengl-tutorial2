@@ -56,6 +56,12 @@ void RenderingQueue::draw_all()
 {
     std::sort(m_Packets.begin(), m_Packets.end());
 
+    if (m_Packets[0].textures == nullptr)
+    {
+        std::sort(m_Packets.begin(), m_Packets.end());
+
+    }
+
     VertexBuffer* current_vbo = nullptr;
     IndexBuffer* current_ibo = nullptr;
     ShaderProgram* active_shader = nullptr;
@@ -85,19 +91,7 @@ void RenderingQueue::draw_all()
         if (packet.uniforms != nullptr)
             set_uniforms(active_shader, packet.uniforms, packet.textures);
 
-        if (!packet.blend.enabled)
-        {
-            active_blend_state.enabled = false;
-            glDisable(GL_BLEND);
-        }
-        else if (packet.blend != active_blend_state)
-        {
-            active_blend_state = packet.blend;
-            glEnable(GL_BLEND);
-            auto srcfunc = get_blending_func(packet.blend.source_func);
-            auto dstfunc = get_blending_func(packet.blend.dest_func);
-            glBlendFunc(srcfunc, dstfunc);
-        }
+        setup_blending(packet.shader, active_blend_state);
 
         if (packet.ibo != nullptr)
         {
@@ -144,6 +138,38 @@ void RenderingQueue::draw_ibo(
     std::size_t count = primitive_size * primitive_count;
 
     glDrawElements(mode, count, GL_UNSIGNED_INT, (void*)start);
+}
+
+void RenderingQueue::setup_blending(ShaderProgram* shader_program, BlendingState& active_blending_state)
+{
+    auto disable_blending = [&]()
+    {
+        active_blending_state.enabled = false;
+        glDisable(GL_BLEND);
+    };
+
+    if (shader_program == nullptr)
+    {
+        disable_blending();
+        return;
+    }
+
+    auto& blend = shader_program->get_blending_state();
+    if (blend == active_blending_state)
+        return;
+
+    if (!blend.enabled)
+    {
+        disable_blending();
+        return;
+    }
+
+    glEnable(GL_BLEND);
+    auto srcfunc = get_blending_func(blend.source_func);
+    auto destfunc = get_blending_func(blend.dest_func);
+    glBlendFunc(srcfunc, destfunc);
+
+    active_blending_state = blend;
 }
 
 void RenderingQueue::set_uniforms(ShaderProgram* active_shader, IUniformNode* first_uniform, TextureNode* first_texture)

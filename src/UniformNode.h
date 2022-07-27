@@ -8,7 +8,7 @@ struct IUniformNode
 {
     IUniformNode* next = nullptr;
 
-    Uniform uniform;
+    Uniform uniform = Uniform::None;
     virtual void set_uniform(ShaderProgram*) = 0;
 };
 

@@ -2,20 +2,58 @@
 
 #include <string>
 #include <array>
+#include <functional>
 #include "OpenGL.h"
 
 #include "Math3D.h"
 #include "UniformHelper.h"
 
+enum class BlendingFunc
+{
+    NONE = 0,
+
+    SRC_COLOR,
+    ONE_MINUS_SRC_COLOR,
+    DST_COLOR,
+    ONE_MINUS_DST_COLOR,
+    SRC_ALPHA,
+    ONE_MINUS_SRC_ALPHA,
+    DST_ALPHA,
+    ONE_MINUS_DST_ALPHA,
+    CONSTANT_COLOR,
+    ONE_MINUS_CONSTANT_COLOR,
+    CONSTANT_ALPHA,
+    ONE_MINUS_CONSTANT_ALPHA
+};
+
+struct BlendingState
+{
+    bool enabled = false;
+
+    BlendingFunc source_func = BlendingFunc::NONE;
+    BlendingFunc dest_func = BlendingFunc::NONE;
+
+    bool equals(const BlendingState&) const;
+
+    bool operator==(const BlendingState&) const;
+    bool operator!=(const BlendingState&) const;
+    bool operator<(const BlendingState&) const;
+};
+
 class ShaderProgram
 {
 private:
     GLuint m_ShaderProgram;
+    uint64_t m_Hash = 0;
+
+    static std::hash<std::string> m_HashObj;
 
     std::string m_VertexFile;
     std::string m_FragmentFile;
     GLuint m_VertexObject;
     GLuint m_FragmentObject;
+
+    BlendingState m_BlendingState;
 
     std::array<GLuint, (std::size_t)Uniform::Count> m_Uniforms;
 
@@ -42,6 +80,9 @@ public:
  
     void bind() const;
 
+    inline void set_blending_state(BlendingState& blend) { m_BlendingState = blend; }
+    inline const BlendingState& get_blending_state() { return m_BlendingState; }
+
     GLint get_uniform_pos(Uniform);
     void set_uniform(Uniform, int);
     void set_uniform(Uniform, float);
@@ -49,4 +90,6 @@ public:
     void set_uniform(Uniform, const Vector3f&);
     void set_uniform(Uniform, const Matrix3f&);
     void set_uniform(Uniform, const Matrix4f&);
+
+    bool operator<(const ShaderProgram&);
 };

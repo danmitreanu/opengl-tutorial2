@@ -55,7 +55,7 @@ public:
     inline float get_width() { return m_Width * m_SizeMultiplier; }
     inline float get_height() { return m_Height * m_SizeMultiplier; }
 
-    void init_textures(ResourceManager*);
+    void init_resources(ResourceManager*);
     void load_heightmap(std::shared_ptr<HeightMap>);
     void generate();
     std::vector<RenderPacket> get_packets(RenderingQueue*, IUniformNode*);

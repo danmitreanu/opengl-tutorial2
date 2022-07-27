@@ -23,7 +23,7 @@ Terrain::Terrain()
     m_WaterVertexLayout->AddVertexAttribute(AttributeType::Position, 2);
 }
 
-void Terrain::init_textures(ResourceManager* resource_manager)
+void Terrain::init_resources(ResourceManager* resource_manager)
 {
     m_GrassTex = resource_manager->get_texture("high_grass.jpeg");
     m_Rock1Tex = resource_manager->get_texture("high_rock1.jpeg");
@@ -34,6 +34,13 @@ void Terrain::init_textures(ResourceManager* resource_manager)
 
     m_TerrainShader = resource_manager->get_shader("terrain_shader");
     m_WaterShader = resource_manager->get_shader("water_shader");
+
+    BlendingState water_blending;
+    water_blending.enabled = true;
+    water_blending.source_func = BlendingFunc::SRC_ALPHA;
+    water_blending.dest_func = BlendingFunc::ONE_MINUS_SRC_ALPHA;
+
+    m_WaterShader->set_blending_state(water_blending);
 }
 
 void Terrain::load_heightmap(std::shared_ptr<HeightMap> height_map)
@@ -158,9 +165,6 @@ RenderPacket Terrain::create_water_packet(
     static constexpr std::size_t topology_size = get_topology_size(GL_TRIANGLES);
 
     RenderPacket packet;
-    packet.blend.enabled = true;
-    packet.blend.source_func = BlendingFunc::SRC_ALPHA;
-    packet.blend.dest_func = BlendingFunc::ONE_MINUS_SRC_ALPHA;
     packet.vbo = m_WaterVbo.get();
     packet.ibo = m_WaterIbo.get();
     packet.shader = m_WaterShader.get();

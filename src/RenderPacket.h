@@ -7,49 +7,16 @@
 #include "UniformNode.h"
 #include "TextureNode.h"
 
-enum class BlendingFunc
-{
-    NONE = 0,
-
-    SRC_COLOR,
-    ONE_MINUS_SRC_COLOR,
-    DST_COLOR,
-    ONE_MINUS_DST_COLOR,
-    SRC_ALPHA,
-    ONE_MINUS_SRC_ALPHA,
-    DST_ALPHA,
-    ONE_MINUS_DST_ALPHA,
-    CONSTANT_COLOR,
-    ONE_MINUS_CONSTANT_COLOR,
-    CONSTANT_ALPHA,
-    ONE_MINUS_CONSTANT_ALPHA
-};
-
-struct BlendingState
-{
-    bool enabled = false;
-
-    BlendingFunc source_func = BlendingFunc::NONE;
-    BlendingFunc dest_func = BlendingFunc::NONE;
-
-    bool equals(const BlendingState&) const;
-
-    bool operator==(const BlendingState&) const;
-    bool operator!=(const BlendingState&) const;
-    bool operator<(const BlendingState&) const;
-};
-
 struct RenderPacket
 {
     int priority = 0;
 
-    ShaderProgram* shader;
-    VertexBuffer* vbo;
-    IndexBuffer* ibo;
-    BlendingState blend;
-    GLenum topology;
-    std::size_t primitive_start;
-    std::size_t primitive_end;
+    ShaderProgram* shader = nullptr;
+    VertexBuffer* vbo = nullptr;
+    IndexBuffer* ibo = nullptr;
+    GLenum topology = GL_TRIANGLES;
+    std::size_t primitive_start = 0;
+    std::size_t primitive_end = 0;
     IUniformNode* uniforms = nullptr;
     TextureNode* textures = nullptr;
 

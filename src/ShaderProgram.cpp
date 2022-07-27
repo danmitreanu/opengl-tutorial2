@@ -1,10 +1,42 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <functional>
 
 #include "Math3D.h"
 #include "AttributeHelper.h"
 #include "ShaderProgram.h"
+
+std::hash<std::string> ShaderProgram::m_HashObj;
+
+bool BlendingState::equals(const BlendingState& cmp) const
+{
+    return
+        enabled == cmp.enabled &&
+        source_func == cmp.source_func &&
+        dest_func == cmp.dest_func;
+}
+
+bool BlendingState::operator==(const BlendingState& other) const
+{
+    return this->equals(other);
+}
+
+bool BlendingState::operator!=(const BlendingState& other) const
+{
+    return !this->equals(other);
+}
+
+bool BlendingState::operator<(const BlendingState& other) const
+{
+    if (enabled != other.enabled)
+        return enabled < other.enabled;
+
+    if (source_func != other.source_func)
+        return source_func < other.source_func;
+
+    return dest_func < other.dest_func;
+}
 
 bool ShaderProgram::init_program()
 {
@@ -102,16 +134,6 @@ void ShaderProgram::link_shader_program(GLuint program)
         std::cout << error_log << std::endl;
         return;
     }
-
-    /*glValidateProgram(program);
-    glGetProgramiv(program, GL_VALIDATE_STATUS, &success);
-    if (success == 0)
-    {
-        glGetProgramInfoLog(program, sizeof(error_log), NULL, error_log);
-        std::cout << "Could not validate program." << std::endl;
-        std::cout << error_log << std::endl;
-        return;
-    }*/
 }
 
 bool ShaderProgram::read_file(const std::string& filename, std::string& out)
@@ -135,6 +157,9 @@ bool ShaderProgram::create(const char* vertex_shader_file, const char* frag_shad
 {
     m_VertexFile = vertex_shader_file;
     m_FragmentFile = frag_shader_file;
+
+    auto hash_str = std::string(m_VertexFile) + m_FragmentFile;
+    m_Hash = m_HashObj(hash_str);
 
     if (!init_program())
         return false;
@@ -222,4 +247,12 @@ void ShaderProgram::init_attributes()
 
         glBindAttribLocation(m_ShaderProgram, int(i), AttributeHelper::get_name((AttributeType)i));
     }
+}
+
+bool ShaderProgram::operator<(const ShaderProgram& other)
+{
+    if (m_BlendingState != other.m_BlendingState)
+        return m_BlendingState < other.m_BlendingState;
+
+    return m_Hash < other.m_Hash;
 }

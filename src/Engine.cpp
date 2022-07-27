@@ -95,7 +95,7 @@ void Engine::init_terrain()
 #endif
 
     m_Terrain = std::make_shared<Terrain>();
-    m_Terrain->init_textures(&m_ResourceManager);
+    m_Terrain->init_resources(&m_ResourceManager);
     m_Terrain->load_heightmap(m_HeightMap);
     m_Terrain->generate();
 }
@@ -150,6 +150,9 @@ void Engine::render()
 void Engine::key_callback(ApplicationBase* app, ApplicationBaseKey key, ApplicationBaseKeyAction action)
 {
     Engine* handler = reinterpret_cast<Engine*>(app);
+
+    if (key == APP_KEY_ESC)
+        close();
 
     bool pressed = action == APP_KEY_PRESS;
     bool released = action == APP_KEY_RELEASE;

@@ -15,6 +15,8 @@ struct WindowState
     float midpoint[2] = { 0.0f, 0.0f };
     bool resized = false;
 
+    bool should_close = false;
+
     void reset();
 };
 
@@ -55,4 +57,5 @@ public:
     ApplicationBase& operator=(const ApplicationBase&) = delete;
 
     virtual void run();
+    void close();
 };
