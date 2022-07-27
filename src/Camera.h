@@ -28,7 +28,7 @@ public:
 
     void change_framebuff_dimensions(std::size_t, std::size_t);
 
-    void set( const Vector3f& look_at);
+    void set(const Vector3f& look_at);
 
     const Matrix4f& get_view_matrix() const;
     const Matrix4f& get_projection_matrix() const;

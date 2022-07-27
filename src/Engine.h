@@ -45,15 +45,11 @@ private:
     void init_texture();
     void init_terrain();
 
-    void key_callback(ApplicationBase*, ApplicationBaseKey, ApplicationBaseKeyAction) override;
-    void framebuffer_callback(ApplicationBase*, std::size_t, std::size_t) override;
-    void focus_callback(ApplicationBase*, bool) override;
-
     void on_key(ApplicationBaseKey, bool);
-    void update_movement(float delta, const Vector2f& mouse);
+    void update_movement(const WindowState&, const float delta);
 
     // ApplicationBase implementations
-    void update(const float delta_time) override;
+    void update(const WindowState&, const float delta_time) override;
     void render() override;
 
 public:

@@ -105,8 +105,6 @@ bool Engine::initialize(const char* window_name, std::size_t width, std::size_t 
     if (!init_window(window_name, width, height))
         return false;
 
-    hide_mouse();
-
     init_buffer();
     init_camera();
     init_texture();
@@ -115,13 +113,15 @@ bool Engine::initialize(const char* window_name, std::size_t width, std::size_t 
     return true;
 }
 
-void Engine::update(const float delta_seconds)
+void Engine::update(const WindowState& window_state, const float delta_seconds)
 {
-    auto mouse = get_mouse_offset();
-    update_movement(delta_seconds, mouse);
+    //update_movement(window_state, delta_seconds);
+    if (window_state.pitchyaw && window_state.changed_mouse_position)
+    {
+        update_movement(window_state, delta_seconds);
+    }
 
     m_Camera.update_camera_matrices();
-    reset_mouse_pos();
 }
 
 void Engine::render()
@@ -147,7 +147,7 @@ void Engine::render()
     m_RenderQueue.clear();
 }
 
-void Engine::key_callback(ApplicationBase* app, ApplicationBaseKey key, ApplicationBaseKeyAction action)
+/*void Engine::key_callback(ApplicationBase* app, ApplicationBaseKey key, ApplicationBaseKeyAction action)
 {
     Engine* handler = reinterpret_cast<Engine*>(app);
 
@@ -171,7 +171,7 @@ void Engine::framebuffer_callback(ApplicationBase* app, std::size_t width, std::
 void Engine::focus_callback(ApplicationBase*, bool)
 {
     hide_mouse();
-}
+}*/
 
 void Engine::on_key(ApplicationBaseKey key, bool pressed)
 {
@@ -191,14 +191,17 @@ void Engine::on_key(ApplicationBaseKey key, bool pressed)
     };
 }
 
-void Engine::update_movement(float delta_seconds, const Vector2f& mouse_offset)
+void Engine::update_movement(const WindowState& window_state, float delta_seconds)
 {
     const float speed = m_Movement.shift ? 1500.0f : 800.0f;
     const float camera_coeff = 2.0f;
-
+    
+    const float mouse_offx = window_state.mouse_delta[0];
+    const float mouse_offy = window_state.mouse_delta[1];
+    
     float move_diff = delta_seconds * speed;
-    float yaw_diff = delta_seconds * mouse_offset.x;
-    float pitch_diff = delta_seconds * mouse_offset.y;
+    float yaw_diff = delta_seconds * mouse_offx;
+    float pitch_diff = delta_seconds * mouse_offy;
 
     float yratio = (float)get_width() / get_height();
 

@@ -4,7 +4,7 @@
 
 enum ApplicationBaseKey
 {
-    APP_KEY_0 = 48,
+    APP_KEY_0,
     APP_KEY_1,
     APP_KEY_2,
     APP_KEY_3,
@@ -15,7 +15,7 @@ enum ApplicationBaseKey
     APP_KEY_8,
     APP_KEY_9,
 
-    APP_KEY_A = 65,
+    APP_KEY_A,
     APP_KEY_B,
     APP_KEY_C,
     APP_KEY_D,
@@ -42,7 +42,7 @@ enum ApplicationBaseKey
     APP_KEY_Y,
     APP_KEY_Z,
  
-    APP_KEY_TAB = 100,
+    APP_KEY_TAB,
     APP_KEY_ESC,
     APP_KEY_UP,
     APP_KEY_DOWN,
@@ -53,7 +53,7 @@ enum ApplicationBaseKey
     APP_KEY_LCTRL,
     APP_KEY_RCTRL,
 
-    APP_KEY_UNKNOWN = 255
+    APP_KEY_COUNT
 };
 
 enum ApplicationBaseKeyAction
