@@ -47,6 +47,7 @@ protected:
 
 public:
     ApplicationBase() = default;
+    ~ApplicationBase();
     ApplicationBase& operator=(const ApplicationBase&) = delete;
 
     virtual void run();

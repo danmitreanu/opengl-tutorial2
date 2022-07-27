@@ -37,6 +37,7 @@ struct BlendingState
 
 bool operator==(BlendingState const&, BlendingState const&);
 bool operator!=(BlendingState const&, BlendingState const&);
+bool operator<(BlendingState const&, BlendingState const&);
 
 struct RenderPacket
 {

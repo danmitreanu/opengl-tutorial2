@@ -111,7 +111,7 @@ void RenderingQueue::draw_all()
         }
         else
         {
-            draw_vbo(packet.topology, packet.primitive_start, packet.primitive_end);
+            draw_vbo(packet.vbo, packet.topology, packet.primitive_start, packet.primitive_end);
         }
     }
 
@@ -119,14 +119,16 @@ void RenderingQueue::draw_all()
 }
 
 void RenderingQueue::draw_vbo(
+    VertexBuffer* vbo,
     GLenum mode,
     std::size_t primitive_start,
     std::size_t primitive_end)
 {
-    std::size_t primitive_size = get_topology_size(mode);
-    std::size_t primitive_count = primitive_end - primitive_start;
-    std::size_t start = primitive_size * primitive_start;
-    std::size_t count = primitive_size * primitive_count;
+    std::size_t element_count = vbo->get_vertex_count();
+    std::size_t element_size = vbo->get_vertex_size();
+    std::size_t topology_size = get_topology_size(mode);
+    const std::size_t start = primitive_start * topology_size * element_size;
+    const std::size_t count = (primitive_end - primitive_start) * topology_size;
 
     glDrawArrays(mode, start, count);
 }

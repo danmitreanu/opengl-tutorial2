@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include "VertexBuffer.h"
 #include "RenderPacket.h"
 #include "UniformNode.h"
 #include "UniformHelper.h"
@@ -20,7 +21,7 @@ private:
     static void set_uniforms(ShaderProgram * active_shader, IUniformNode* first, TextureNode* first_texture);
     static void set_textures(TextureNode*);
 
-    static void draw_vbo(GLenum mode, std::size_t, std::size_t);
+    static void draw_vbo(VertexBuffer*, GLenum mode, std::size_t, std::size_t);
     static void draw_ibo(GLenum mode, std::size_t, std::size_t);
 
 public:

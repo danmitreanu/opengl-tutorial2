@@ -35,6 +35,9 @@ void VertexBuffer::create(
     const VertexLayout* vertex_layout,
     const std::size_t vertex_count)
 {
+    m_VertexCount = vertex_count;
+    m_VertexSize = vertex_layout->size();
+
     auto& attrs = vertex_layout->get_attributes();
 
     int attr_count = attrs.size();

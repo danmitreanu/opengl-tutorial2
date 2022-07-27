@@ -1,6 +1,14 @@
 #include "ApplicationBase.h"
 #include "ApplicationBaseKeys.h"
 
+ApplicationBase::~ApplicationBase()
+{
+    glfwTerminate();
+#ifdef _WIN32
+    glewTerminate();
+#endif
+}
+
 bool ApplicationBase::init_window(const char* window_name, std::size_t width, std::size_t height)
 {
     if (!glfwInit())
