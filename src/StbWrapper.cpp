@@ -1,7 +1,8 @@
 #include "StbWrapper.h"
 #include "utils/stb_image.h"
 
-unsigned char* StbWrapper::stbi_wrapper_load(const char* filename,
+unsigned char* StbWrapper::stbi_wrapper_load(
+    const char* filename,
     int* width,
     int* height,
     int* channels,
