@@ -53,7 +53,7 @@ bool RenderPacket::compare(const RenderPacket& other) const
     if (blend != other.blend)
         return blend < other.blend;
 
-    return textures < other.textures;
+    return primitive_start < other.primitive_start;
 }
 
 bool RenderPacket::operator<(const RenderPacket& other) const
