@@ -23,10 +23,8 @@ Terrain::Terrain()
     m_WaterVertexLayout->AddVertexAttribute(AttributeType::Position, 2);
 }
 
-void Terrain::init_textures()
+void Terrain::init_textures(ResourceManager* resource_manager)
 {
-    auto* resource_manager = ResourceManager::get_instance();
-
     m_GrassTex = resource_manager->get_texture("high_grass.jpeg");
     m_Rock1Tex = resource_manager->get_texture("high_rock1.jpeg");
     m_Rock2Tex = resource_manager->get_texture("high_rock2.jpeg");

@@ -29,6 +29,7 @@ private:
     std::shared_ptr<IndexBuffer> m_IndexBuffer;
 
     RenderingQueue m_RenderQueue;
+    ResourceManager m_ResourceManager;
 
     std::shared_ptr<Texture> m_Texture;
     std::shared_ptr<Texture> m_Texture2;

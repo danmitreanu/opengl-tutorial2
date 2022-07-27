@@ -29,15 +29,15 @@ struct BlendingState
 {
     bool enabled = false;
 
-    BlendingFunc source_func;
-    BlendingFunc dest_func;
+    BlendingFunc source_func = BlendingFunc::NONE;
+    BlendingFunc dest_func = BlendingFunc::NONE;
 
     bool equals(const BlendingState&) const;
-};
 
-bool operator==(BlendingState const&, BlendingState const&);
-bool operator!=(BlendingState const&, BlendingState const&);
-bool operator<(BlendingState const&, BlendingState const&);
+    bool operator==(const BlendingState&) const;
+    bool operator!=(const BlendingState&) const;
+    bool operator<(const BlendingState&) const;
+};
 
 struct RenderPacket
 {
@@ -53,10 +53,9 @@ struct RenderPacket
     IUniformNode* uniforms = nullptr;
     TextureNode* textures = nullptr;
 
-    static bool compare(RenderPacket const&, RenderPacket const&);
+    bool compare(const RenderPacket&) const;
+    bool operator<(const RenderPacket&) const;
 };
-
-bool operator<(RenderPacket const&, RenderPacket const&);
 
 static constexpr std::size_t get_topology_size(GLenum topology)
 {

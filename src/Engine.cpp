@@ -81,8 +81,8 @@ void Engine::init_camera()
 
 void Engine::init_texture()
 {
-    m_Texture = ResourceManager::get_instance()->get_texture("mc.jpeg");
-    m_Texture2 = ResourceManager::get_instance()->get_texture("grass.jpeg");
+    m_Texture = m_ResourceManager.get_texture("mc.jpeg");
+    m_Texture2 = m_ResourceManager.get_texture("grass.jpeg");
 }
 
 void Engine::init_terrain()
@@ -95,7 +95,7 @@ void Engine::init_terrain()
 #endif
 
     m_Terrain = std::make_shared<Terrain>();
-    m_Terrain->init_textures();
+    m_Terrain->init_textures(&m_ResourceManager);
     m_Terrain->load_heightmap(m_HeightMap);
     m_Terrain->generate();
 }
