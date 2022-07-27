@@ -14,9 +14,6 @@ bool ApplicationBase::init_window(const char* window_name, std::size_t width, st
     if (!glfwInit())
         return false;
 
-    m_Width = width;
-    m_Height = height;
-
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -40,11 +37,10 @@ bool ApplicationBase::init_window(const char* window_name, std::size_t width, st
     glfwSetWindowFocusCallback(m_Window, ApplicationBase::focus_callback);
     glfwSetInputMode(m_Window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
     glViewport(0, 0, fb_width, fb_height);
-    m_FramebufferMultiplier = (float)fb_width / width;
-    m_Width = fb_width;
-    m_Height = fb_height;
-    m_MidX = fb_width / (2.0f * m_FramebufferMultiplier);
-    m_MidY = fb_height / (2.0f * m_FramebufferMultiplier);
+
+
+    m_WindowState.framebuffer_scale = (float)fb_width / width;
+    on_window_resize((std::size_t)fb_width, (std::size_t)fb_height);
 
 #ifdef _WIN32
     if (glewInit() != GLEW_OK)
@@ -64,7 +60,7 @@ void ApplicationBase::hide_mouse()
 
 void ApplicationBase::reset_mouse_pos()
 {
-    glfwSetCursorPos(m_Window, m_MidX, m_MidY);
+    glfwSetCursorPos(m_Window, m_WindowState.midpoint[0], m_WindowState.midpoint[1]);
 }
 
 Vector2f ApplicationBase::get_mouse_offset()
@@ -72,8 +68,8 @@ Vector2f ApplicationBase::get_mouse_offset()
     double xpos, ypos;
     glfwGetCursorPos(m_Window, &xpos, &ypos);
 
-    float offsetX = m_MidX - xpos;
-    float offsetY = m_MidY - ypos;
+    float offsetX = m_WindowState.midpoint[0] - xpos;
+    float offsetY = m_WindowState.midpoint[1] - ypos;
 
     return Vector2f{ -1.0f * offsetX, offsetY };
 }
@@ -92,14 +88,25 @@ void ApplicationBase::key_callback(GLFWwindow* window, int keycode, int scancode
     handler->key_callback(handler, app_key, app_action);
 }
 
+void ApplicationBase::on_window_resize(std::size_t width, std::size_t height)
+{
+    if (m_WindowState.width != width || m_WindowState.height != height)
+    {
+        m_WindowState.width = width;
+        m_WindowState.height = height;
+
+        m_WindowState.midpoint[0] = width / (2.0f * m_WindowState.framebuffer_scale);
+        m_WindowState.midpoint[1] = height / (2.0f * m_WindowState.framebuffer_scale);
+
+        m_WindowState.resized = true;
+    }
+}
+
 void ApplicationBase::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     ApplicationBase* handler = reinterpret_cast<ApplicationBase*>(glfwGetWindowUserPointer(window));
 
-    handler->m_Width = width;
-    handler->m_Height = height;
-    handler->m_MidX = width / (2.0f * handler->m_FramebufferMultiplier);
-    handler->m_MidY = height / (2.0f * handler->m_FramebufferMultiplier);
+    handler->on_window_resize((std::size_t)width, (std::size_t)height);
     glViewport(0, 0, width, height);
 
     handler->framebuffer_callback(handler, width, height);

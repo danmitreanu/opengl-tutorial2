@@ -7,16 +7,22 @@
 
 #include "ApplicationBaseKeys.h"
 
+struct WindowState
+{
+    std::size_t width = 0;
+    std::size_t height = 0;
+    float framebuffer_scale = 1.0f;
+    float midpoint[2] = { 0.0f, 0.0f };
+    bool resized = false;
+};
+
 class ApplicationBase
 {
 private:
     GLFWwindow* m_Window = nullptr;
     // Width and height for the framebuffer
-    std::size_t m_Width;
-    std::size_t m_Height;
-    float m_FramebufferMultiplier;
-    float m_MidX;
-    float m_MidY;
+
+    WindowState m_WindowState;
 
     ResourceManager m_ResourceManager;
 
@@ -24,13 +30,15 @@ private:
     static void framebuffer_size_callback(GLFWwindow*, int, int);
     static void focus_callback(GLFWwindow*, int);
 
+    void on_window_resize(std::size_t, std::size_t);
+
     static ApplicationBaseKey get_key(int);
     static ApplicationBaseKeyAction get_key_action(int);
 
 protected:
     bool init_window(const char*, std::size_t, std::size_t);
-    inline std::size_t get_width() { return m_Width; }
-    inline std::size_t get_height() { return m_Height; }
+    inline std::size_t get_width() { return m_WindowState.width; }
+    inline std::size_t get_height() { return m_WindowState.height; }
 
     void hide_mouse();
     void reset_mouse_pos();
