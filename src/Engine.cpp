@@ -49,12 +49,7 @@ void Engine::init_texture()
 
 void Engine::init_terrain()
 {
-    m_HeightMap = std::make_shared<HeightMap>();
-#ifndef _WIN32
-    m_HeightMap->load("/Users/danm3/opengl/cmake/resources/heightmap.tga");
-#else
-    m_HeightMap->load("X:\\opengl-tutorial2\\resources\\height_map.jpeg");
-#endif
+    m_HeightMap = m_ResourceManager.get_heightmap("heightmap.tga");
 
     m_Terrain = std::make_shared<Terrain>();
     m_Terrain->init_resources(&m_ResourceManager);

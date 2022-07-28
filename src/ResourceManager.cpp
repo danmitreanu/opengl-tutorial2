@@ -18,13 +18,13 @@ ResourceManagerPaths::ResourceManagerPaths()
     current_dir = std::filesystem::current_path();
 #endif
 
-    textures_path = current_dir / "resources";
+    resources_path = current_dir / "resources";
     shaders_path = current_dir / "shaders";
 }
 
 void ResourceManager::load_texture(const std::string& name, std::shared_ptr<Texture>& out)
 {
-    auto fs_path = m_Paths.textures_path / name;
+    auto fs_path = m_Paths.resources_path / name;
     auto path = fs_path.string();
 
     auto texture = std::make_shared<Texture>();
@@ -36,6 +36,22 @@ void ResourceManager::load_texture(const std::string& name, std::shared_ptr<Text
     }
 
     out = texture;
+}
+
+void ResourceManager::load_heightmap(const std::string& name, std::shared_ptr<HeightMap>& out)
+{
+    auto fs_path = m_Paths.resources_path / name;
+    auto path = fs_path.string();
+
+    auto heightmap = std::make_shared<HeightMap>();
+    if (!heightmap->load(path.c_str()))
+    {
+        std::cout << "ResourceManager: Could not load heightmap " << path << "." << std::endl;
+        out = nullptr;
+        return;
+    }
+
+    out = heightmap;
 }
 
 void ResourceManager::load_shader(const std::string& name, std::shared_ptr<ShaderProgram>& out)
@@ -68,6 +84,19 @@ std::shared_ptr<Texture> ResourceManager::get_texture(const std::string& texture
     m_Textures.insert({ texture_name, texture });
 
     return texture;
+}
+
+std::shared_ptr<HeightMap> ResourceManager::get_heightmap(const std::string& heightmap_name)
+{
+    if (m_HeightMaps.count(heightmap_name))
+        return m_HeightMaps[heightmap_name];
+
+    std::shared_ptr<HeightMap> heightmap;
+    load_heightmap(heightmap_name, heightmap);
+
+    m_HeightMaps.insert({ heightmap_name, heightmap });
+
+    return heightmap;
 }
 
 std::shared_ptr<ShaderProgram> ResourceManager::get_shader(const std::string& shader_name)
