@@ -12,8 +12,6 @@ private:
     GLuint m_Texture;
     uint64_t m_Hash = 0;
 
-    static std::hash<std::string> m_HashObj;
-
 public:
     Texture();
     ~Texture();

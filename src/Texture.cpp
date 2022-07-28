@@ -4,8 +4,6 @@
 #include "StbWrapper.h"
 #include "ShaderProgram.h"
 
-std::hash<std::string> Texture::m_HashObj;
-
 Texture::Texture()
 {
     glGenTextures(1, &m_Texture);
@@ -36,7 +34,7 @@ bool Texture::load(const char* filename)
 
     StbWrapper::stbi_wrapper_free(data);
 
-    m_Hash = m_HashObj(filename);
+    m_Hash = std::hash<std::string>{}(filename);
 
     return true;
 }

@@ -46,18 +46,11 @@ private:
     GLuint m_ShaderProgram;
     uint64_t m_Hash = 0;
 
-    static std::hash<std::string> m_HashObj;
-
-    std::string m_VertexFile;
-    std::string m_FragmentFile;
-    GLuint m_VertexObject;
-    GLuint m_FragmentObject;
-
     BlendingState m_BlendingState;
 
     std::array<GLuint, (std::size_t)Uniform::Count> m_Uniforms;
 
-    bool init_program();
+    bool init_program(const char*, const char*);
     void init_uniforms();
     void init_attributes();
 
@@ -72,6 +65,7 @@ private:
 
 public:
     ShaderProgram() = default;
+    ~ShaderProgram();
 
     // Create with vertex shader and frag shader files.
     bool create(const char*, const char*);

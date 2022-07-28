@@ -7,8 +7,6 @@
 #include "AttributeHelper.h"
 #include "ShaderProgram.h"
 
-std::hash<std::string> ShaderProgram::m_HashObj;
-
 bool BlendingState::equals(const BlendingState& cmp) const
 {
     return
@@ -38,7 +36,13 @@ bool BlendingState::operator<(const BlendingState& other) const
     return dest_func < other.dest_func;
 }
 
-bool ShaderProgram::init_program()
+ShaderProgram::~ShaderProgram()
+{
+    if (m_ShaderProgram)
+        glDeleteProgram(m_ShaderProgram);
+}
+
+bool ShaderProgram::init_program(const char* vertex_shader_file, const char* fragment_shader_file)
 {
     m_ShaderProgram = glCreateProgram();
 
@@ -47,23 +51,22 @@ bool ShaderProgram::init_program()
         std::cout << "Could not create shader program." << std::endl;
         return false;
     }
-    //return;
+
     std::string vertex_text;
     std::string frag_text;
 
-    if (!read_file(m_VertexFile, vertex_text) || !read_file(m_FragmentFile, frag_text))
+    if (!read_file(vertex_shader_file, vertex_text) || !read_file(fragment_shader_file, frag_text))
     {
         std::cout << "Could not read one or more shader files." << std::endl;
         return false;
     }
 
-    m_VertexObject = create_shader_object(vertex_text, GL_VERTEX_SHADER);
-    m_FragmentObject = create_shader_object(frag_text, GL_FRAGMENT_SHADER);
+    GLuint vertex_obj = create_shader_object(vertex_text, GL_VERTEX_SHADER);
+    GLuint frag_obj = create_shader_object(frag_text, GL_FRAGMENT_SHADER);
 
-    glAttachShader(m_ShaderProgram, m_VertexObject);
-    glAttachShader(m_ShaderProgram, m_FragmentObject);
+    glAttachShader(m_ShaderProgram, vertex_obj);
+    glAttachShader(m_ShaderProgram, frag_obj);
 
-    
     init_attributes();
     link_shader_program(m_ShaderProgram);
 
@@ -155,13 +158,10 @@ bool ShaderProgram::read_file(const std::string& filename, std::string& out)
 
 bool ShaderProgram::create(const char* vertex_shader_file, const char* frag_shader_file)
 {
-    m_VertexFile = vertex_shader_file;
-    m_FragmentFile = frag_shader_file;
+    auto hash_str = std::string(vertex_shader_file) + frag_shader_file;
+    m_Hash = std::hash<std::string>{}(hash_str);
 
-    auto hash_str = std::string(m_VertexFile) + m_FragmentFile;
-    m_Hash = m_HashObj(hash_str);
-
-    if (!init_program())
+    if (!init_program(vertex_shader_file, frag_shader_file))
         return false;
 
     init_uniforms();
@@ -235,16 +235,8 @@ void ShaderProgram::init_attributes()
     GLenum type;
     GLsizei length;
 
-    //const std::size_t count = get_attribute_count();
-
     for (std::size_t i = 0; i < (std::size_t)AttributeType::Count; i++)
     {
-       //glGetActiveAttrib(m_ShaderProgram, i, namebuf_size, &length, &size, &type, namebuf);
-
-        //std::size_t type_index = (std::size_t)AttributeHelper::get_type(namebuf);
-
-        //assert(type_index != (std::size_t)AttributeType::Count);
-
         glBindAttribLocation(m_ShaderProgram, int(i), AttributeHelper::get_name((AttributeType)i));
     }
 }
