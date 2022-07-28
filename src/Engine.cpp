@@ -57,12 +57,37 @@ void Engine::init_terrain()
     m_Terrain->generate();
 }
 
-void Engine::update(InputState& input_state, const float delta_seconds)
+void Engine::update(
+    const WindowState& window_state,
+    InputState& input_state,
+    const float delta_seconds)
 {
-    if (input_state.key_pressed(APP_KEY_ESC))
-        close();
+    if (window_state.size_changed)
+    {
+        m_Camera.change_framebuff_dimensions(window_state.width, window_state.height);
+    }
 
-    update_movement(input_state, delta_seconds);
+    if (input_state.key_pressed(APP_KEY_ESC))
+    {
+        if (m_Active)
+        {
+            m_Active = false;
+            input_state.release_mouse();
+        }
+        else
+        {
+            close();
+        }
+    }
+
+    if (input_state.mouse_clicked(APP_MOUSE_LEFT) && !m_Active)
+    {
+        m_Active = true;
+        input_state.capture_mouse();
+    }
+
+    if (m_Active)
+        update_movement(input_state, delta_seconds);
 
     m_Camera.update_camera_matrices();
 }
@@ -112,16 +137,16 @@ void Engine::update_movement(InputState& input_state, const float delta_seconds)
         m_Camera.on_pitch(pitch_diff * camera_coeff);
     }
  
-    bool up = input_state.key_pressed(APP_KEY_W);
-    bool down = input_state.key_pressed(APP_KEY_S);
+    bool up = input_state.key_down(APP_KEY_W);
+    bool down = input_state.key_down(APP_KEY_S);
     if (up != down)
     {
         float direction = -1.0f * int(up) + 1.0f * int(down);
         m_Camera.on_move_forward(direction * move_diff);
     }
 
-    bool left = input_state.key_pressed(APP_KEY_A);
-    bool right = input_state.key_pressed(APP_KEY_D);
+    bool left = input_state.key_down(APP_KEY_A);
+    bool right = input_state.key_down(APP_KEY_D);
     if (left != right)
     {
         float direction = 1.0f * int(left) - 1.0f * int(right);

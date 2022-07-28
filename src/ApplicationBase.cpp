@@ -12,6 +12,7 @@ void glfw_key_press_callback(GLFWwindow*, int, int, int, int);
 void glfw_cursor_pos_callback(GLFWwindow*, double, double);
 void glfw_framebuffer_size_callback(GLFWwindow*, int, int);
 void glfw_mouse_button_callback(GLFWwindow*, int, int, int);
+void glfw_window_focus_callback(GLFWwindow*, int);
 
 void glfw_key_press_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -21,10 +22,12 @@ void glfw_key_press_callback(GLFWwindow* window, int key, int scancode, int acti
     if (action == GLFW_PRESS)
     {
         handler->m_InputState.m_KeysPressed[app_key] = true;
+        handler->m_InputState.m_KeysDown[app_key] = true;
     }
     else if (action == GLFW_RELEASE)
     {
         handler->m_InputState.m_KeysPressed[app_key] = false;
+        handler->m_InputState.m_KeysDown[app_key] = false;
     }
 }
 
@@ -48,13 +51,14 @@ void glfw_cursor_pos_callback(GLFWwindow* window, double xpos, double ypos)
 void glfw_framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     auto* handler = glfw_get_base(window);
+    glViewport(0, 0, width, height);
 
     handler->m_WindowState.width = (std::size_t)width;
     handler->m_WindowState.height = (std::size_t)height;
     handler->m_WindowState.midx = width / (2.0f * handler->m_WindowState.framebuffer_scale);
     handler->m_WindowState.midy = height / (2.0f * handler->m_WindowState.framebuffer_scale);
 
-    handler->m_WindowState.resized = true;
+    handler->m_WindowState.size_changed = true;
 }
 
 void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -65,13 +69,26 @@ void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int 
     if (action == GLFW_PRESS)
     {
         handler->m_InputState.m_ButtonsClicked[app_button] = true;
-        handler->m_InputState.m_ButtonsPressed[app_button] = true;
+        handler->m_InputState.m_ButtonsDown[app_button] = true;
     }
     else
     {
         handler->m_InputState.m_ButtonsClicked[app_button] = false;
-        handler->m_InputState.m_ButtonsPressed[app_button] = false;
+        handler->m_InputState.m_ButtonsDown[app_button] = false;
     }
+}
+
+void glfw_window_focus_callback(GLFWwindow* window, int focused)
+{
+    auto* handler = glfw_get_base(window);
+
+    bool focus = focused == GLFW_TRUE ? true : false;
+
+    if (handler->m_WindowState.focused == focus)
+        return;
+
+    handler->m_WindowState.focused = focus;
+    handler->m_WindowState.focus_changed = true;
 }
 
 /* -------------- /GLFW --------------- */
@@ -108,12 +125,12 @@ bool ApplicationBase::init_window(const char* window_name, std::size_t width, st
     glfwGetFramebufferSize(m_Window, &fb_width, &fb_height);
     m_WindowState.framebuffer_scale = (float)fb_width / width;
     glfw_framebuffer_size_callback(m_Window, fb_width, fb_height);
-    glViewport(0, 0, fb_width, fb_height);
 
     glfwSetKeyCallback(m_Window, glfw_key_press_callback);
     glfwSetCursorPosCallback(m_Window, glfw_cursor_pos_callback);
     glfwSetFramebufferSizeCallback(m_Window, glfw_framebuffer_size_callback);
     glfwSetMouseButtonCallback(m_Window, glfw_mouse_button_callback);
+    glfwSetWindowFocusCallback(m_Window, glfw_window_focus_callback);
 
 #ifdef _WIN32
     if (glewInit() != GLEW_OK)
@@ -137,12 +154,12 @@ void ApplicationBase::run()
         float now_time = glfwGetTime();
 
         float delta_time = now_time - last_time;
-        this->update(m_InputState, delta_time);
+        this->update(m_WindowState, m_InputState, delta_time);
         this->render();
         last_time = now_time;
 
-        m_WindowState.reset();
         m_InputState.reset();
+        m_WindowState.reset();
 
         glfwSwapBuffers(m_Window);
         glfwPollEvents();
@@ -156,7 +173,17 @@ void ApplicationBase::close()
 
 void WindowState::reset()
 {
-    resized = false;
+    size_changed = false;
+    focus_changed = false;
+}
+
+bool InputState::key_pressed(ApplicationBaseKey key)
+{
+    if (!m_KeysPressed[key])
+        return false;
+
+    m_KeysPressed[key] = false;
+    return true;
 }
 
 bool InputState::mouse_clicked(ApplicationBaseMouseButton button)
@@ -171,6 +198,11 @@ bool InputState::mouse_clicked(ApplicationBaseMouseButton button)
 void InputState::capture_mouse()
 {
     glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void InputState::release_mouse()
+{
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void InputState::reset()

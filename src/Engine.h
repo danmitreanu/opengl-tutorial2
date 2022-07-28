@@ -21,6 +21,7 @@
 class Engine : public ApplicationBase
 {
 private:
+    bool m_Active = true;
     Camera m_Camera;
 
     RenderingQueue m_RenderQueue;
@@ -42,8 +43,8 @@ private:
     void update_movement(InputState&, const float delta);
 
     // ApplicationBase implementations
-    void update(InputState&, const float delta_time) override;
-    void render() override;
+    void update(const WindowState&, InputState&, const float);
+    void render();
 
 public:
     Engine() = default;
