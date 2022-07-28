@@ -56,12 +56,6 @@ void RenderingQueue::draw_all()
 {
     std::sort(m_Packets.begin(), m_Packets.end());
 
-    if (m_Packets[0].textures == nullptr)
-    {
-        std::sort(m_Packets.begin(), m_Packets.end());
-
-    }
-
     VertexBuffer* current_vbo = nullptr;
     IndexBuffer* current_ibo = nullptr;
     ShaderProgram* active_shader = nullptr;

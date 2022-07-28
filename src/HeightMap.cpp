@@ -32,7 +32,7 @@ void HeightMap::read_heights(unsigned char* data, const short bytes_per_pixel)
 
 float HeightMap::get_height(std::size_t x, std::size_t y)
 {
-    if (x >= m_TexWidth || y >= m_TexHeight)
+    if (x >= m_TexWidth || y >= m_TexHeight || x < 0 || y < 0)
         return 0.0f;
 
     return m_Height[x + m_TexWidth * y];

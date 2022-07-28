@@ -73,8 +73,6 @@ private:
 public:
     ShaderProgram() = default;
 
-    inline GLuint get_program_id() const { return m_ShaderProgram; }
-
     // Create with vertex shader and frag shader files.
     bool create(const char*, const char*);
  

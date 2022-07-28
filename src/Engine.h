@@ -14,19 +14,14 @@
 #include "Terrain.h"
 #include "ResourceManager.h"
 #include "ApplicationBase.h"
-#include "ApplicationBaseKeys.h"
+#include "ApplicationBaseInputs.h"
 
-#include "Movement.h"
 #include "RenderingQueue.h"
 
 class Engine : public ApplicationBase
 {
 private:
     Camera m_Camera;
-
-    std::shared_ptr<VertexLayout> m_VertexLayout;
-    std::shared_ptr<VertexBuffer> m_VertexBuffer;
-    std::shared_ptr<IndexBuffer> m_IndexBuffer;
 
     RenderingQueue m_RenderQueue;
     ResourceManager m_ResourceManager;
@@ -37,19 +32,17 @@ private:
     std::shared_ptr<Terrain> m_Terrain;
 
     Matrix4f m_ModelMatrix;
-    Movement m_Movement;
     Vector3f m_Offset{ 0, 0, 0 };
 
-    void init_buffer();
     void init_camera();
     void init_texture();
     void init_terrain();
 
     void on_key(ApplicationBaseKey, bool);
-    void update_movement(const WindowState&, const float delta);
+    void update_movement(InputState&, const float delta);
 
     // ApplicationBase implementations
-    void update(const WindowState&, const float delta_time) override;
+    void update(InputState&, const float delta_time) override;
     void render() override;
 
 public:
@@ -57,4 +50,6 @@ public:
     Engine& operator=(const Engine&) = delete;
 
     bool initialize(const char* window_name, std::size_t width, std::size_t height);
+
+    void before_run(const WindowState&, InputState&) override;
 };

@@ -20,54 +20,16 @@
 #include "Terrain.h"
 #include "HeightMap.h"
 
-void Engine::init_buffer()
+bool Engine::initialize(const char* window_name, std::size_t width, std::size_t height)
 {
-    m_VertexLayout = std::make_shared<VertexLayout>();
-    m_VertexBuffer = std::make_shared<VertexBuffer>();
-    m_IndexBuffer = std::make_shared<IndexBuffer>();
+    if (!init_window(window_name, width, height))
+        return false;
 
-    m_VertexLayout->AddVertexAttribute(AttributeType::Position, 3);
-    m_VertexLayout->AddVertexAttribute(AttributeType::Color, 3);
-    m_VertexLayout->AddVertexAttribute(AttributeType::UV, 2);
+    init_camera();
+    init_texture();
+    init_terrain();
 
-    struct Vertex
-    {
-        Vector3f pos;
-        Vector3f c;
-        Vector2f uv;
-    };
- 
-    std::vector<Vertex> vertices;
-    std::vector<uint32_t> indices;
-
-    for (std::size_t y = 0; y < 100; y++)
-    {
-        for (std::size_t x = 0; x < 100; x++)
-        {
-            Vertex v;
-            v.pos = Vector3f(float(x) * 3, float(y) * 3, 0.2 * (rand() % 50) - 100.0f);
-            v.c = Vector3f(1.0f, 0.0f, 0.0f);
-            v.uv = Vector2f(float(x) / 100.0f, float(y) / 100.0f);
-            vertices.push_back(v);
-        }
-    }
-
-    for (std::size_t y = 0; y < 99; y++)
-    {
-        for (std::size_t x = 0; x < 99; x++)
-        {
-            indices.push_back(y * 100 + x);
-            indices.push_back(y * 100 + x + 1);
-            indices.push_back((y + 1) * 100 + x);
-            indices.push_back(y * 100 + x + 1);
-            indices.push_back((y + 1) * 100 + x + 1);
-            indices.push_back((y + 1) * 100 + x);
-        }
-    }
-
-    m_VertexBuffer->create(vertices.data(), m_VertexLayout.get(), vertices.size());
-    m_IndexBuffer->create(m_VertexBuffer.get(), indices.data(), indices.size());
-
+    return true;
 }
 
 void Engine::init_camera()
@@ -100,26 +62,12 @@ void Engine::init_terrain()
     m_Terrain->generate();
 }
 
-bool Engine::initialize(const char* window_name, std::size_t width, std::size_t height)
+void Engine::update(InputState& input_state, const float delta_seconds)
 {
-    if (!init_window(window_name, width, height))
-        return false;
+    if (input_state.key_pressed(APP_KEY_ESC))
+        close();
 
-    init_buffer();
-    init_camera();
-    init_texture();
-    init_terrain();
-
-    return true;
-}
-
-void Engine::update(const WindowState& window_state, const float delta_seconds)
-{
-    //update_movement(window_state, delta_seconds);
-    if (window_state.pitchyaw && window_state.changed_mouse_position)
-    {
-        update_movement(window_state, delta_seconds);
-    }
+    update_movement(input_state, delta_seconds);
 
     m_Camera.update_camera_matrices();
 }
@@ -147,63 +95,17 @@ void Engine::render()
     m_RenderQueue.clear();
 }
 
-/*void Engine::key_callback(ApplicationBase* app, ApplicationBaseKey key, ApplicationBaseKeyAction action)
+void Engine::update_movement(InputState& input_state, const float delta_seconds)
 {
-    Engine* handler = reinterpret_cast<Engine*>(app);
-
-    if (key == APP_KEY_ESC)
-        close();
-
-    bool pressed = action == APP_KEY_PRESS;
-    bool released = action == APP_KEY_RELEASE;
-
-    bool active = pressed || !released;
-    handler->on_key(key, active);
-}
-
-void Engine::framebuffer_callback(ApplicationBase* app, std::size_t width, std::size_t height)
-{
-    Engine* handler = reinterpret_cast<Engine*>(app);
-    handler->m_Camera.change_framebuff_dimensions(width, height);
-    handler->m_Camera.update_camera_matrices();
-}
-
-void Engine::focus_callback(ApplicationBase*, bool)
-{
-    hide_mouse();
-}*/
-
-void Engine::on_key(ApplicationBaseKey key, bool pressed)
-{
-    switch (key)
-    {
-        case APP_KEY_W: m_Movement.up = pressed; break;
-        case APP_KEY_S: m_Movement.down = pressed; break;
-        case APP_KEY_A: m_Movement.left = pressed; break;
-        case APP_KEY_D: m_Movement.right = pressed; break;
-        case APP_KEY_Q: m_Movement.yaw_left = pressed; break;
-        case APP_KEY_E: m_Movement.yaw_right = pressed; break;
-        case APP_KEY_Z: m_Movement.pitch_up = pressed; break;
-        case APP_KEY_X: m_Movement.pitch_down = pressed; break;
-        case APP_KEY_LSHIFT: m_Movement.shift = pressed; break;
-
-        default: break;
-    };
-}
-
-void Engine::update_movement(const WindowState& window_state, float delta_seconds)
-{
-    const float speed = m_Movement.shift ? 1500.0f : 800.0f;
+    const float speed = input_state.key_pressed(APP_KEY_LSHIFT) ? 1500.0f : 800.0f;
     const float camera_coeff = 2.0f;
-    
-    const float mouse_offx = window_state.mouse_delta[0];
-    const float mouse_offy = window_state.mouse_delta[1];
-    
-    float move_diff = delta_seconds * speed;
-    float yaw_diff = delta_seconds * mouse_offx;
-    float pitch_diff = delta_seconds * mouse_offy;
 
-    float yratio = (float)get_width() / get_height();
+    const float mouse_offx = 0.0f;
+    const float mouse_offy = 0.0f;
+
+    const float move_diff = delta_seconds * speed;
+    const float yaw_diff = delta_seconds * input_state.mouse_delta.x;
+    const float pitch_diff = delta_seconds * input_state.mouse_delta.y;
 
     if (yaw_diff != 0)
     {
@@ -212,18 +114,28 @@ void Engine::update_movement(const WindowState& window_state, float delta_second
 
     if (pitch_diff != 0)
     {
-        m_Camera.on_pitch(yratio * pitch_diff * camera_coeff);
+        m_Camera.on_pitch(pitch_diff * camera_coeff);
     }
  
-    if (m_Movement.up != m_Movement.down)
+    bool up = input_state.key_pressed(APP_KEY_W);
+    bool down = input_state.key_pressed(APP_KEY_S);
+    if (up != down)
     {
-        float direction = -1.0f * int(m_Movement.up) + 1.0f * int(m_Movement.down);
+        float direction = -1.0f * int(up) + 1.0f * int(down);
         m_Camera.on_move_forward(direction * move_diff);
     }
 
-    if (m_Movement.left != m_Movement.right)
+    bool left = input_state.key_pressed(APP_KEY_A);
+    bool right = input_state.key_pressed(APP_KEY_D);
+    if (left != right)
     {
-        float direction = 1.0f * int(m_Movement.left) - 1.0f * int(m_Movement.right);
+        float direction = 1.0f * int(left) - 1.0f * int(right);
         m_Camera.on_move_side(direction * move_diff);
     }
+}
+
+void Engine::before_run(const WindowState& window_state, InputState& input_state)
+{
+    m_Camera.change_framebuff_dimensions(window_state.width, window_state.height);
+    input_state.capture_mouse();
 }

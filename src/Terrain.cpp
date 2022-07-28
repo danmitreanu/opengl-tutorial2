@@ -46,8 +46,8 @@ void Terrain::init_resources(ResourceManager* resource_manager)
 void Terrain::load_heightmap(std::shared_ptr<HeightMap> height_map)
 {
     m_HeightMap = height_map;
-    m_Width = m_HeightMap->get_width();
-    m_Height = m_HeightMap->get_height();
+    m_Width = m_HeightMap->get_tex_width();
+    m_Height = m_HeightMap->get_tex_height();
 }
 
 Vector3f Terrain::get_terrain_normal(std::size_t x, std::size_t y)
